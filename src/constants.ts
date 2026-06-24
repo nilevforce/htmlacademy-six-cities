@@ -1,8 +1,24 @@
 enum PlaceType {
-  ROOM = 'Room',
-  APARTMENT = 'Apartment'
+  Room = 'Room',
+  Apartment = 'Apartment'
+}
+
+enum AppRoute {
+  Root = '/',
+  Login = '/login',
+  Logout = '/logout',
+  Favorites = '/favorites',
+  Offer = '/offer/:offerId'
+}
+
+enum AuthorizationStatus {
+  Auth = 'AUTH',
+  NoAuth = 'NO_AUTH',
+  Unknown = 'UNKNOWN'
 }
 
 export {
-  PlaceType
+  PlaceType,
+  AppRoute,
+  AuthorizationStatus
 };

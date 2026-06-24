@@ -1,41 +1,17 @@
+import { ReactElement } from 'react';
+import { AuthorizationStatus, PlaceType } from '../../constants.ts';
+import Header from '../../components/header/header.tsx';
 import PlaceCard from '../../components/place-card/place-card.tsx';
-import {PlaceType} from '../../constants.ts';
 
 interface WelcomeScreenProps {
   totalCountPlaces: number;
+  userAuthStatus: AuthorizationStatus;
 }
 
-function WelcomeScreen ({ totalCountPlaces }: WelcomeScreenProps): JSX.Element {
+function WelcomeScreen (props: WelcomeScreenProps): ReactElement {
   return (
     <div className="page page--gray page--main">
-      <header className="header">
-        <div className="container">
-          <div className="header__wrapper">
-            <div className="header__left">
-              <a className="header__logo-link header__logo-link--active">
-                <img className="header__logo" src="img/logo.svg" alt="6 cities logo" width="81" height="41" />
-              </a>
-            </div>
-            <nav className="header__nav">
-              <ul className="header__nav-list">
-                <li className="header__nav-item user">
-                  <a className="header__nav-link header__nav-link--profile" href="#">
-                    <div className="header__avatar-wrapper user__avatar-wrapper">
-                    </div>
-                    <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
-                    <span className="header__favorite-count">3</span>
-                  </a>
-                </li>
-                <li className="header__nav-item">
-                  <a className="header__nav-link" href="#">
-                    <span className="header__signout">Sign out</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header userAuthStatus={props.userAuthStatus}/>
 
       <main className="page__main page__main--index">
         <h1 className="visually-hidden">Cities</h1>
@@ -79,7 +55,7 @@ function WelcomeScreen ({ totalCountPlaces }: WelcomeScreenProps): JSX.Element {
           <div className="cities__places-container container">
             <section className="cities__places places">
               <h2 className="visually-hidden">Places</h2>
-              <b className="places__found">{totalCountPlaces} places to stay in Amsterdam</b>
+              <b className="places__found">{props.totalCountPlaces} places to stay in Amsterdam</b>
               <form className="places__sorting" action="#" method="get">
                 <span className="places__sorting-caption">Sort by</span>
                 <span className="places__sorting-type" tabIndex={0}>
@@ -101,7 +77,7 @@ function WelcomeScreen ({ totalCountPlaces }: WelcomeScreenProps): JSX.Element {
                   mark="Premium"
                   name="Beautiful & luxurious apartment at great location"
                   price={120}
-                  type={PlaceType.APARTMENT}
+                  type={PlaceType.Apartment}
                   rating={4}
                 />
 
@@ -109,7 +85,7 @@ function WelcomeScreen ({ totalCountPlaces }: WelcomeScreenProps): JSX.Element {
                   imageSrc="img/room.jpg"
                   name="Wood and stone place"
                   price={80}
-                  type={PlaceType.ROOM}
+                  type={PlaceType.Room}
                   inBookmarks
                   rating={4}
                 />
@@ -118,7 +94,7 @@ function WelcomeScreen ({ totalCountPlaces }: WelcomeScreenProps): JSX.Element {
                   imageSrc="img/apartment-02.jpg"
                   name="Canal View Prinsengracht"
                   price={132}
-                  type={PlaceType.APARTMENT}
+                  type={PlaceType.Apartment}
                   rating={4}
                 />
 
@@ -127,7 +103,7 @@ function WelcomeScreen ({ totalCountPlaces }: WelcomeScreenProps): JSX.Element {
                   mark="Premium"
                   name="Nice, cozy, warm big bed apartment"
                   price={180}
-                  type={PlaceType.APARTMENT}
+                  type={PlaceType.Apartment}
                   rating={5}
                 />
 
@@ -135,7 +111,7 @@ function WelcomeScreen ({ totalCountPlaces }: WelcomeScreenProps): JSX.Element {
                   imageSrc="img/room.jpg"
                   name="Wood and stone place"
                   price={80}
-                  type={PlaceType.ROOM}
+                  type={PlaceType.Room}
                   rating={4}
                   inBookmarks
                 />
@@ -150,6 +126,5 @@ function WelcomeScreen ({ totalCountPlaces }: WelcomeScreenProps): JSX.Element {
     </div>
   );
 }
-
 
 export default WelcomeScreen;

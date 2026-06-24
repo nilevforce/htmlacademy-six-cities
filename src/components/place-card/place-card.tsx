@@ -1,4 +1,5 @@
-import {PlaceType} from '../../constants.ts';
+import { ReactElement } from 'react';
+import { PlaceType } from '../../constants.ts';
 
 type Rating = 0 | 1 | 2 | 3 | 4 | 5;
 
@@ -21,7 +22,15 @@ const RatingWidth: Record<Rating, string> = {
   5: '100%'
 };
 
-function PlaceCard({ imageSrc, mark, name, price, type, inBookmarks = false, rating = 0 }: PlaceCardProps): JSX.Element {
+function PlaceCard ({
+  imageSrc,
+  mark,
+  name,
+  price,
+  type,
+  inBookmarks = false,
+  rating = 0
+}: PlaceCardProps): ReactElement {
   return (
     <article className="cities__card place-card">
       {
