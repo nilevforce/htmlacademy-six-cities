@@ -1,38 +1,46 @@
-import { ReactElement } from 'react';
-import { PlaceType } from '../../constants.ts';
-
-type Rating = 0 | 1 | 2 | 3 | 4 | 5;
+import { ReactElement, SyntheticEvent } from 'react';
+import { generatePath, Link } from 'react-router-dom';
+import { AppRoute } from '../../constants.ts';
 
 interface PlaceCardProps {
+  id: string;
   imageSrc: string;
-  mark?: string;
-  name: string;
+  title: string;
   price: number;
-  type: PlaceType;
-  inBookmarks?: boolean;
-  rating?: Rating;
+  type: string;
+  isFavorite?: boolean;
+  isPremium?: boolean;
+  rating?: number;
+  onCardHover?: (evt: SyntheticEvent<HTMLElement>) => void;
+  onCardLeave?: (evt: SyntheticEvent<HTMLElement>) => void;
 }
 
-const RatingWidth: Record<Rating, string> = {
-  0: '0%',
-  1: '20%',
-  2: '40%',
-  3: '60%',
-  4: '80%',
-  5: '100%'
-};
+function getWidthPercent (rating: number): string {
+  return `${(rating / 5) * 100}%`;
+}
 
 function PlaceCard ({
-  imageSrc,
-  mark,
-  name,
-  price,
+  id,
+  title,
   type,
-  inBookmarks = false,
-  rating = 0
+  imageSrc,
+  price,
+  isPremium = false,
+  isFavorite = false,
+  rating = 0,
+  onCardHover,
+  onCardLeave
 }: PlaceCardProps): ReactElement {
+  const mark = isPremium ? 'Premium' : null;
+  const linkToOffer = generatePath(AppRoute.Offer, { offerId: id });
+
   return (
-    <article className="cities__card place-card">
+    <article
+      className="cities__card place-card"
+      data-offer-id={id}
+      onMouseEnter={onCardHover}
+      onMouseLeave={onCardLeave}
+    >
       {
         mark && (
           <div className="place-card__mark">
@@ -41,15 +49,15 @@ function PlaceCard ({
         )
       }
       <div className="cities__image-wrapper place-card__image-wrapper">
-        <a href="#">
+        <Link to={linkToOffer}>
           <img
             className="place-card__image"
             src={imageSrc}
             width={260}
             height={200}
-            alt={name}
+            alt={title}
           />
-        </a>
+        </Link>
       </div>
       <div className="place-card__info">
         <div className="place-card__price-wrapper">
@@ -61,24 +69,26 @@ function PlaceCard ({
             className={[
               'place-card__bookmark-button',
               'button',
-              inBookmarks && 'place-card__bookmark-button--active',
+              isFavorite && 'place-card__bookmark-button--active',
             ].filter(Boolean).join(' ')}
             type="button"
           >
             <svg className="place-card__bookmark-icon" width="18" height="19">
               <use xlinkHref="#icon-bookmark"></use>
             </svg>
-            <span className="visually-hidden">{inBookmarks ? 'In bookmarks' : 'To bookmarks'}</span>
+            <span className="visually-hidden">{isFavorite ? 'In bookmarks' : 'To bookmarks'}</span>
           </button>
         </div>
         <div className="place-card__rating rating">
           <div className="place-card__stars rating__stars">
-            <span style={{ width: RatingWidth[rating] }}></span>
+            <span style={{ width: getWidthPercent(rating) }}></span>
             <span className="visually-hidden">Rating</span>
           </div>
         </div>
         <h2 className="place-card__name">
-          <a href="#">{name}</a>
+          <Link to={linkToOffer}>
+            {title}
+          </Link>
         </h2>
         <p className="place-card__type">{type}</p>
       </div>

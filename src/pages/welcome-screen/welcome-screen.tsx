@@ -1,17 +1,21 @@
 import { ReactElement } from 'react';
-import { AuthorizationStatus, PlaceType } from '../../constants.ts';
+import { AuthorizationStatus } from '../../constants.ts';
+import { Offer } from '../../types/offer.ts';
 import Header from '../../components/header/header.tsx';
-import PlaceCard from '../../components/place-card/place-card.tsx';
+import PlacesList from '../../components/places-list/places-list.tsx';
 
 interface WelcomeScreenProps {
-  totalCountPlaces: number;
+  offers: Offer[];
   userAuthStatus: AuthorizationStatus;
 }
 
-function WelcomeScreen (props: WelcomeScreenProps): ReactElement {
+function WelcomeScreen ({
+  offers = [],
+  userAuthStatus
+}: WelcomeScreenProps): ReactElement {
   return (
     <div className="page page--gray page--main">
-      <Header userAuthStatus={props.userAuthStatus}/>
+      <Header userAuthStatus={userAuthStatus} />
 
       <main className="page__main page__main--index">
         <h1 className="visually-hidden">Cities</h1>
@@ -55,7 +59,7 @@ function WelcomeScreen (props: WelcomeScreenProps): ReactElement {
           <div className="cities__places-container container">
             <section className="cities__places places">
               <h2 className="visually-hidden">Places</h2>
-              <b className="places__found">{props.totalCountPlaces} places to stay in Amsterdam</b>
+              <b className="places__found">{offers.length} places to stay in Amsterdam</b>
               <form className="places__sorting" action="#" method="get">
                 <span className="places__sorting-caption">Sort by</span>
                 <span className="places__sorting-type" tabIndex={0}>
@@ -71,51 +75,8 @@ function WelcomeScreen (props: WelcomeScreenProps): ReactElement {
                   <li className="places__option" tabIndex={0}>Top rated first</li>
                 </ul>
               </form>
-              <div className="cities__places-list places__list tabs__content">
-                <PlaceCard
-                  imageSrc="img/apartment-01.jpg"
-                  mark="Premium"
-                  name="Beautiful & luxurious apartment at great location"
-                  price={120}
-                  type={PlaceType.Apartment}
-                  rating={4}
-                />
 
-                <PlaceCard
-                  imageSrc="img/room.jpg"
-                  name="Wood and stone place"
-                  price={80}
-                  type={PlaceType.Room}
-                  inBookmarks
-                  rating={4}
-                />
-
-                <PlaceCard
-                  imageSrc="img/apartment-02.jpg"
-                  name="Canal View Prinsengracht"
-                  price={132}
-                  type={PlaceType.Apartment}
-                  rating={4}
-                />
-
-                <PlaceCard
-                  imageSrc="img/apartment-03.jpg"
-                  mark="Premium"
-                  name="Nice, cozy, warm big bed apartment"
-                  price={180}
-                  type={PlaceType.Apartment}
-                  rating={5}
-                />
-
-                <PlaceCard
-                  imageSrc="img/room.jpg"
-                  name="Wood and stone place"
-                  price={80}
-                  type={PlaceType.Room}
-                  rating={4}
-                  inBookmarks
-                />
-              </div>
+              <PlacesList offers={offers} />
             </section>
             <div className="cities__right-section">
               <section className="cities__map map"></section>

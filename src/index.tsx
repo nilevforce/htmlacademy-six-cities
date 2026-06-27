@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './components/app.tsx';
+import { Offer } from './types/offer.ts';
+import App from './components/app/app.tsx';
+import { offers } from './mocks/offers.ts';
 
-const TOTAL_COUNT_PLACES = 312;
+const OFFER_LIST: Offer[] = structuredClone(offers);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -11,7 +13,10 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <App
-      totalCountPlaces={TOTAL_COUNT_PLACES}
+      offers={OFFER_LIST}
+      favorites={
+        OFFER_LIST.filter((offer) => offer.isFavorite)
+      }
     />
   </React.StrictMode>
 );

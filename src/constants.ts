@@ -1,14 +1,11 @@
-enum PlaceType {
-  Room = 'Room',
-  Apartment = 'Apartment'
-}
-
 enum AppRoute {
   Root = '/',
   Login = '/login',
   Logout = '/logout',
   Favorites = '/favorites',
-  Offer = '/offer/:offerId'
+  Offer = '/offer/:offerId',
+  UserProfile = '/me',
+  NotFound = '/404'
 }
 
 enum AuthorizationStatus {
@@ -18,7 +15,6 @@ enum AuthorizationStatus {
 }
 
 export {
-  PlaceType,
   AppRoute,
   AuthorizationStatus
 };
