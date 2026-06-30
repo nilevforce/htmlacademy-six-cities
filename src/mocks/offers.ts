@@ -1,4 +1,6 @@
-const offers = [
+import { Offer } from '../types/offer.ts';
+
+const offers: Offer[] = [
   {
     'id': '590c217c-31cb-4ec4-a853-26984fdb2738',
     'title': 'The Pondhouse - A Magical Place',
@@ -320,29 +322,6 @@ const offers = [
     'isFavorite': true,
     'isPremium': true,
     'rating': 2.6
-  },
-  {
-    'id': '8db0d7ea-2d86-4a3c-95db-7dff635e7f23',
-    'title': 'Penthouse, 4-5 rooms + 5 balconies',
-    'type': 'hotel',
-    'price': 238,
-    'previewImage': 'https://16.design.htmlacademy.pro/static/hotel/19.jpg',
-    'city': {
-      'name': 'Paris',
-      'location': {
-        'latitude': 48.85661,
-        'longitude': 2.351499,
-        'zoom': 13
-      }
-    },
-    'location': {
-      'latitude': 48.83961,
-      'longitude': 2.342499,
-      'zoom': 16
-    },
-    'isFavorite': false,
-    'isPremium': true,
-    'rating': 4.4
   },
   {
     'id': 'e1c7bfd2-895d-4c46-b772-4802351649b6',
@@ -2761,6 +2740,4 @@ const offers = [
   }
 ];
 
-export {
-  offers
-};
+export default offers;

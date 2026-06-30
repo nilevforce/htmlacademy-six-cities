@@ -12,16 +12,22 @@ import FavoritesScreenEmpty
   from '../../pages/favorites-screen-empty/favorites-screen-empty.tsx';
 import WelcomeScreenEmpty
   from '../../pages/welcome-screen-empty/welcome-screen-empty.tsx';
+import { City } from '../../types/city.ts';
+import { Review } from '../../types/review.ts';
 
 interface AppProps {
   offers: Offer[];
+  cities: City[];
   favorites: Offer[];
+  reviews: Review[];
 }
 
 const USER_AUTH_STATUS = AuthorizationStatus.Auth;
 
 function App ({
   offers = [],
+  cities = [],
+  reviews = [],
   favorites = []
 }: AppProps): ReactElement {
   return (
@@ -32,7 +38,11 @@ function App ({
           element={
             offers.length
               ?
-              <WelcomeScreen offers={offers} userAuthStatus={USER_AUTH_STATUS} />
+              <WelcomeScreen
+                offers={offers}
+                cities={cities}
+                userAuthStatus={USER_AUTH_STATUS}
+              />
               : <WelcomeScreenEmpty userAuthStatus={USER_AUTH_STATUS} />
           }
         />
@@ -47,7 +57,10 @@ function App ({
               {
                 favorites.length
                   ?
-                  <FavoritesScreen userAuthStatus={USER_AUTH_STATUS} favorites={favorites} />
+                  <FavoritesScreen
+                    userAuthStatus={USER_AUTH_STATUS}
+                    favorites={favorites}
+                  />
                   : <FavoritesScreenEmpty userAuthStatus={USER_AUTH_STATUS} />
               }
             </PrivateRoute>
@@ -58,7 +71,7 @@ function App ({
           element={
             <OfferScreen
               userAuthStatus={USER_AUTH_STATUS}
-              offers={offers}
+              reviews={reviews}
             />
           }
         />

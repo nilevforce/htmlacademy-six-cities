@@ -15,4 +15,6 @@ const debounce = <Args extends unknown[]> (
   };
 };
 
-export default debounce;
+export {
+  debounce
+};
