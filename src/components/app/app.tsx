@@ -10,14 +10,9 @@ import NotFoundScreen from '../../pages/not-found-screen/not-found-screen.tsx';
 import PrivateRoute from '../private-route/private-route.tsx';
 import FavoritesScreenEmpty
   from '../../pages/favorites-screen-empty/favorites-screen-empty.tsx';
-import WelcomeScreenEmpty
-  from '../../pages/welcome-screen-empty/welcome-screen-empty.tsx';
-import { City } from '../../types/city.ts';
 import { Review } from '../../types/review.ts';
 
 interface AppProps {
-  offers: Offer[];
-  cities: City[];
   favorites: Offer[];
   reviews: Review[];
 }
@@ -25,8 +20,6 @@ interface AppProps {
 const USER_AUTH_STATUS = AuthorizationStatus.Auth;
 
 function App ({
-  offers = [],
-  cities = [],
   reviews = [],
   favorites = []
 }: AppProps): ReactElement {
@@ -36,14 +29,7 @@ function App ({
         <Route
           path={AppRoute.Root}
           element={
-            offers.length
-              ?
-              <WelcomeScreen
-                offers={offers}
-                cities={cities}
-                userAuthStatus={USER_AUTH_STATUS}
-              />
-              : <WelcomeScreenEmpty userAuthStatus={USER_AUTH_STATUS} />
+            <WelcomeScreen userAuthStatus={USER_AUTH_STATUS} />
           }
         />
         <Route

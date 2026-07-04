@@ -20,11 +20,20 @@ const CITIES = [
   'Brussels',
   'Amsterdam',
   'Hamburg',
-  'Dusseldorf'
+  'Dusseldorf',
+  'Berlin'
 ];
+
+enum SortType {
+  Popular = 'Popular',
+  PriceLowToHigh = 'Price: low to high',
+  PriceHighToLow = 'Price: high to low',
+  TopRatedFirst = 'Top rated first'
+}
 
 export {
   AppRoute,
   AuthorizationStatus,
-  CITIES
+  CITIES,
+  SortType
 };

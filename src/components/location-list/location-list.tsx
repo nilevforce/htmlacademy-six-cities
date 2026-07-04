@@ -1,24 +1,23 @@
 import { ReactElement, SyntheticEvent } from 'react';
 import Location from '../location/location.tsx';
-import { City } from '../../types/city.ts';
 
 interface LocationListProps {
-  cities: City[];
-  activeCityName: string;
-  onChangeLocation: (selectedCityName: string) => void;
+  cities: string[];
+  activeCity: string;
+  onChangeLocation: (selectedCity: string) => void;
 }
 
 function LocationList (props: LocationListProps): ReactElement {
   const {
     cities,
-    activeCityName,
+    activeCity,
     onChangeLocation
   } = props;
 
   const handleLocationClick = (evt: SyntheticEvent<HTMLElement>) => {
-    const selectedCity: string = evt.currentTarget?.dataset?.jsId ?? activeCityName;
+    const selectedCity: string = evt.currentTarget?.dataset?.jsId ?? activeCity;
 
-    if (selectedCity === activeCityName) {
+    if (selectedCity === activeCity) {
       return;
     }
 
@@ -29,10 +28,10 @@ function LocationList (props: LocationListProps): ReactElement {
     <ul className="locations__list tabs__list">
       {cities.map((city) => (
         <Location
-          key={city.name}
-          id={city.name}
-          title={city.name}
-          isActive={city.name === activeCityName}
+          key={city}
+          id={city}
+          title={city}
+          isActive={city === activeCity}
           onClickLocation={handleLocationClick}
         />))}
     </ul>

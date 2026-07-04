@@ -8,7 +8,7 @@ import leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { City } from '../../types/city.ts';
 import { MapPoint } from '../../types/map-points.ts';
-import useMap from '../../hooks/use-map.ts';
+import { useMap } from '../../hooks';
 import classNames from 'classnames';
 
 interface MapProps {

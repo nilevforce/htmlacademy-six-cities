@@ -1,38 +1,67 @@
 import { ReactElement, useState } from 'react';
-import { AuthorizationStatus } from '../../constants.ts';
-import { Offer } from '../../types/offer.ts';
+import { AuthorizationStatus, CITIES, SortType } from '../../constants.ts';
 import Header from '../../components/header/header.tsx';
 import PlaceList from '../../components/place-list/place-list.tsx';
 import LocationList from '../../components/location-list/location-list.tsx';
-import { City } from '../../types/city.ts';
 import Map from '../../components/map/map.tsx';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { changeCity } from '../../store/action.ts';
+import WelcomeScreenEmpty
+  from '../welcome-screen-empty/welcome-screen-empty.tsx';
+import SortList from '../../components/sort-list/sort-list.tsx';
 
 interface WelcomeScreenProps {
-  offers: Offer[];
-  cities: City[];
   userAuthStatus: AuthorizationStatus;
 }
 
 function WelcomeScreen ({
-  offers = [],
-  cities = [],
   userAuthStatus
 }: WelcomeScreenProps): ReactElement {
-  const [currentCity, setCurrentCity] = useState<string>(cities[0].name);
+  const currentCity = useAppSelector((state) => state.city);
+  const offers = useAppSelector((state) => state.offers);
+  const dispatch = useAppDispatch();
+
+  const [currentSortType, setCurrentSortType] = useState<SortType>(SortType.Popular);
   const [selectedPlaceCardTitle, setSelectedPlaceCardTitle] = useState<string | null>(null);
 
-  const filteredOffers = offers.filter(
-    (offer) => offer.city.name === currentCity
-  );
+  const sortTypeList: SortType[] = Object.values(SortType);
+
+  const filteredOffers = offers.filter((offer) => offer.city.name === currentCity);
+
+  if (filteredOffers.length === 0) {
+    return (
+      <WelcomeScreenEmpty userAuthStatus={userAuthStatus} />
+    );
+  }
+
+  const getSortedOffers = () => {
+    switch (currentSortType) {
+      case SortType.PriceLowToHigh:
+        return filteredOffers.toSorted((a, b) => a.price - b.price);
+      case SortType.PriceHighToLow:
+        return filteredOffers.toSorted((a, b) => b.price - a.price);
+      case SortType.TopRatedFirst:
+        return filteredOffers.toSorted((a, b) => b.rating - a.rating);
+      default:
+        return filteredOffers;
+    }
+  };
+
+  const sortedOffers = getSortedOffers();
 
   const handlePlaceCardHover = (offerId: string | null) => {
-    const cardTitle = filteredOffers
-      .find(
-        (offer) => offer.id === offerId
-      )
-      ?.title || null;
+    const cardTitle = filteredOffers.find((offer) => offer.id === offerId)?.title;
+    setSelectedPlaceCardTitle(cardTitle || null);
+  };
 
-    setSelectedPlaceCardTitle(cardTitle);
+  const handleLocationChange = (city: string) => dispatch(changeCity({ city }));
+
+  const handleSortTypeChange = (sortType: SortType) => {
+    if (!sortType) {
+      return;
+    }
+
+    setCurrentSortType(sortType);
   };
 
   return (
@@ -44,11 +73,9 @@ function WelcomeScreen ({
         <div className="tabs">
           <section className="locations container">
             <LocationList
-              cities={cities}
-              activeCityName={currentCity}
-              onChangeLocation={
-                (selectedCityName) => setCurrentCity(selectedCityName)
-              }
+              cities={CITIES}
+              activeCity={currentCity}
+              onChangeLocation={handleLocationChange}
             />
           </section>
         </div>
@@ -57,59 +84,23 @@ function WelcomeScreen ({
             <section className="cities__places places">
               <h2 className="visually-hidden">Places</h2>
               <b className="places__found">{filteredOffers.length} places to stay in {currentCity}</b>
-              <form
-                className="places__sorting"
-                action="#"
-                method="get"
-              >
-                <span className="places__sorting-caption">Sort by</span>
-                <span
-                  className="places__sorting-type"
-                  tabIndex={0}
-                >
-                  Popular
-                  <svg
-                    className="places__sorting-arrow"
-                    width="7"
-                    height="4"
-                  >
-                    <use xlinkHref="#icon-arrow-select"></use>
-                  </svg>
-                </span>
-                <ul className="places__options places__options--custom places__options--opened">
-                  <li
-                    className="places__option places__option--active"
-                    tabIndex={0}
-                  >Popular
-                  </li>
-                  <li
-                    className="places__option"
-                    tabIndex={0}
-                  >Price: low to high
-                  </li>
-                  <li
-                    className="places__option"
-                    tabIndex={0}
-                  >Price: high to low
-                  </li>
-                  <li
-                    className="places__option"
-                    tabIndex={0}
-                  >Top rated first
-                  </li>
-                </ul>
-              </form>
+
+              <SortList
+                sortTypeList={sortTypeList}
+                currentSortType={currentSortType}
+                onSortTypeChange={handleSortTypeChange}
+              />
 
               <PlaceList
                 type={'cities'}
-                offers={filteredOffers}
+                offers={sortedOffers}
                 onPlaceCardHover={handlePlaceCardHover}
               />
             </section>
 
             <div className="cities__right-section">
               <Map
-                city={cities.find((city) => city.name === currentCity)!} // Если есть предложения, значит 100% есть города
+                city={filteredOffers[0].city} // Если есть предложения, значит 100% есть города
                 points={filteredOffers.map((offer) => ({
                   title: offer.title,
                   latitude: offer.location.latitude,
