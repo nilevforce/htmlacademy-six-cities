@@ -1,5 +1,8 @@
-import { ReactElement, useState } from 'react';
-import { AuthorizationStatus, CITIES, SortType } from '../../constants.ts';
+import { ReactElement, useEffect, useMemo, useState } from 'react';
+import {
+  CITIES,
+  SortType
+} from '../../constants.ts';
 import Header from '../../components/header/header.tsx';
 import PlaceList from '../../components/place-list/place-list.tsx';
 import LocationList from '../../components/location-list/location-list.tsx';
@@ -9,28 +12,41 @@ import { changeCity } from '../../store/action.ts';
 import WelcomeScreenEmpty
   from '../welcome-screen-empty/welcome-screen-empty.tsx';
 import SortList from '../../components/sort-list/sort-list.tsx';
+import { useSearchParams } from 'react-router-dom';
+import { MapPoint } from '../../types/map-points.ts';
 
-interface WelcomeScreenProps {
-  userAuthStatus: AuthorizationStatus;
-}
+function WelcomeScreen (): ReactElement {
+  const dispatch = useAppDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-function WelcomeScreen ({
-  userAuthStatus
-}: WelcomeScreenProps): ReactElement {
+  useEffect(() => {
+    const cityFromUrl = searchParams.get('city');
+    if (cityFromUrl && CITIES.includes(cityFromUrl)) {
+      dispatch(changeCity({ city: cityFromUrl }));
+      setSearchParams({});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
+
   const currentCity = useAppSelector((state) => state.city);
   const offers = useAppSelector((state) => state.offers);
-  const dispatch = useAppDispatch();
 
   const [currentSortType, setCurrentSortType] = useState<SortType>(SortType.Popular);
-  const [selectedPlaceCardTitle, setSelectedPlaceCardTitle] = useState<string | null>(null);
+  const [hoveredPoint, setHoveredPoint] = useState<MapPoint | null>(null);
 
   const sortTypeList: SortType[] = Object.values(SortType);
 
   const filteredOffers = offers.filter((offer) => offer.city.name === currentCity);
 
+  const mapPoints = useMemo<MapPoint[]>(() => filteredOffers.map((offer) => ({
+    title: offer.title,
+    latitude: offer.location.latitude,
+    longitude: offer.location.longitude,
+  })), [filteredOffers]);
+
   if (filteredOffers.length === 0) {
     return (
-      <WelcomeScreenEmpty userAuthStatus={userAuthStatus} />
+      <WelcomeScreenEmpty />
     );
   }
 
@@ -50,8 +66,17 @@ function WelcomeScreen ({
   const sortedOffers = getSortedOffers();
 
   const handlePlaceCardHover = (offerId: string | null) => {
-    const cardTitle = filteredOffers.find((offer) => offer.id === offerId)?.title;
-    setSelectedPlaceCardTitle(cardTitle || null);
+    const hoveredOffer = filteredOffers.find((offer) => offer.id === offerId);
+
+    setHoveredPoint(
+      hoveredOffer
+        ? {
+          title: hoveredOffer.title,
+          latitude: hoveredOffer.location.latitude,
+          longitude: hoveredOffer.location.longitude,
+        }
+        : null
+    );
   };
 
   const handleLocationChange = (city: string) => dispatch(changeCity({ city }));
@@ -66,7 +91,7 @@ function WelcomeScreen ({
 
   return (
     <div className="page page--gray page--main">
-      <Header userAuthStatus={userAuthStatus} />
+      <Header />
 
       <main className="page__main page__main--index">
         <h1 className="visually-hidden">Cities</h1>
@@ -99,16 +124,14 @@ function WelcomeScreen ({
             </section>
 
             <div className="cities__right-section">
-              <Map
-                city={filteredOffers[0].city} // Если есть предложения, значит 100% есть города
-                points={filteredOffers.map((offer) => ({
-                  title: offer.title,
-                  latitude: offer.location.latitude,
-                  longitude: offer.location.longitude,
-                }))}
-                selectedPointTitle={selectedPlaceCardTitle}
-                className={'cities__map'}
-              />
+              {
+                <Map
+                  city={filteredOffers[0].city}
+                  points={mapPoints}
+                  selectedPoint={hoveredPoint}
+                  className={'cities__map'}
+                />
+              }
             </div>
           </div>
         </div>

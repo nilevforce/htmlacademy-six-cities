@@ -31,9 +31,21 @@ enum SortType {
   TopRatedFirst = 'Top rated first'
 }
 
+enum APIRoute {
+  Offers = '/offers',
+  Offer = '/offers/:offerId',
+  OfferComments = '/comments/:offerId',
+  NearbyOffers = '/offers/:offerId/nearby',
+  OfferFavoriteStatus = '/favorite/:offerId/:status',
+  Favorites = '/favorite',
+  Login = '/login',
+  Logout = '/logout'
+}
+
 export {
   AppRoute,
   AuthorizationStatus,
   CITIES,
-  SortType
+  SortType,
+  APIRoute
 };

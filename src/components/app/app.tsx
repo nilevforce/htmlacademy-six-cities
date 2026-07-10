@@ -1,72 +1,36 @@
-import { ReactElement } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { AppRoute, AuthorizationStatus } from '../../constants.ts';
-import { Offer } from '../../types/offer.ts';
-import WelcomeScreen from '../../pages/welcome-screen/welcome-screen.tsx';
-import LoginScreen from '../../pages/login-screen/login-screen.tsx';
-import FavoritesScreen from '../../pages/favorites-screen/favorites-screen.tsx';
-import OfferScreen from '../../pages/offer-screen/offer-screen.tsx';
-import NotFoundScreen from '../../pages/not-found-screen/not-found-screen.tsx';
-import PrivateRoute from '../private-route/private-route.tsx';
-import FavoritesScreenEmpty
-  from '../../pages/favorites-screen-empty/favorites-screen-empty.tsx';
-import { Review } from '../../types/review.ts';
+import { ReactElement, useEffect, useState } from 'react';
+import { RouterProvider } from 'react-router-dom';
+import { useAppDispatch } from '../../hooks';
+import router from '../../router.ts';
+import {
+  checkUserAuthAction,
+  fetchOffersAction
+} from '../../store/api-actions.ts';
+import Loader from '../loader/loader.tsx';
 
-interface AppProps {
-  favorites: Offer[];
-  reviews: Review[];
-}
+function App (): ReactElement {
+  const dispatch = useAppDispatch();
+  const [isAppInitializing, setIsAppInitializing] = useState<boolean>(true);
 
-const USER_AUTH_STATUS = AuthorizationStatus.Auth;
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        await dispatch(checkUserAuthAction());
+      } finally {
+        await dispatch(fetchOffersAction());
+        setIsAppInitializing(false);
+      }
+    };
 
-function App ({
-  reviews = [],
-  favorites = []
-}: AppProps): ReactElement {
+    initializeApp();
+  }, [dispatch]);
+
+  if (isAppInitializing) {
+    return <Loader />;
+  }
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path={AppRoute.Root}
-          element={
-            <WelcomeScreen userAuthStatus={USER_AUTH_STATUS} />
-          }
-        />
-        <Route
-          path={AppRoute.Login}
-          element={<LoginScreen userAuthStatus={USER_AUTH_STATUS} />}
-        />
-        <Route
-          path={AppRoute.Favorites}
-          element={
-            <PrivateRoute authStatus={USER_AUTH_STATUS}>
-              {
-                favorites.length
-                  ?
-                  <FavoritesScreen
-                    userAuthStatus={USER_AUTH_STATUS}
-                    favorites={favorites}
-                  />
-                  : <FavoritesScreenEmpty userAuthStatus={USER_AUTH_STATUS} />
-              }
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={AppRoute.Offer}
-          element={
-            <OfferScreen
-              userAuthStatus={USER_AUTH_STATUS}
-              reviews={reviews}
-            />
-          }
-        />
-        <Route
-          path="*"
-          element={<NotFoundScreen />}
-        />
-      </Routes>
-    </BrowserRouter>
+    <RouterProvider router={router} />
   );
 }
 

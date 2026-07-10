@@ -1,178 +1,264 @@
-import { ReactElement, useState } from 'react';
-import nearbyOffers from '../../mocks/neaby-offers.ts';
-import { AppRoute, AuthorizationStatus } from '../../constants.ts';
-import { Review } from '../../types/review.ts';
+import {
+  ReactElement, SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  AppRoute
+} from '../../constants.ts';
 import Header from '../../components/header/header.tsx';
 import ReviewList from '../../components/review-list/review-list.tsx';
-import { Offer } from '../../types/offer.ts';
 import PlaceList from '../../components/place-list/place-list.tsx';
 import Map from '../../components/map/map.tsx';
-import { Link, useParams } from 'react-router-dom';
-import offers from '../../mocks/offers.ts';
+import {
+  useNavigate,
+  useParams
+} from 'react-router-dom';
+import {
+  useAppDispatch,
+  useAppSelector
+} from '../../hooks';
+import {
+  changeOfferFavoriteStatusAction,
+  fetchNearbyOffersAction,
+  fetchOfferByIdAction,
+  fetchOfferReviewsAction,
+} from '../../store/api-actions.ts';
+import {
+  Offer,
+  OfferDetails
+} from '../../types/offer.ts';
+import { Review } from '../../types/review.ts';
+import { MapPoint } from '../../types/map-points.ts';
+import Loader from '../../components/loader/loader.tsx';
+import classNames from 'classnames';
+import { getRatingPercent } from '../../helpers';
+import {
+  capitalizeFirstLetter
+} from '../../helpers/capitalize-first-letter.ts';
 
-// TODO: Заменить на серверные данные
-const NEARBY_OFFERS: Offer[] = nearbyOffers;
+const IMAGE_COUNT: number = 6;
+const MAX_REVIEW_COUNT: number = 10;
 
-interface OfferScreenProps {
-  userAuthStatus: AuthorizationStatus;
-  reviews: Review[];
-}
-
-function OfferScreen (props: OfferScreenProps): ReactElement {
-  const { reviews } = props;
+function OfferScreen (): ReactElement {
   const { offerId } = useParams();
-  const [selectedPlaceCardTitle, setSelectedPlaceCardTitle] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const currentOffer = useAppSelector<OfferDetails | null>((state) => state.currentOffer);
+  const currentOfferReviews = useAppSelector<Review[] | []>((state) => state.currentOfferReviews);
+  const nearbyOffers = useAppSelector<Offer[]>((state) => state.nearbyOffers).slice(0, 3);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hoveredPoint, setHoveredPoint] = useState<MapPoint | null>(null);
+
+  const sortedOfferReviews = [...currentOfferReviews]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, MAX_REVIEW_COUNT);
+
+  const mapPoints = useMemo<MapPoint[]>(() => [
+    ...nearbyOffers.map((offer) => ({
+      title: offer.title,
+      latitude: offer.location.latitude,
+      longitude: offer.location.longitude,
+    })),
+    ...(currentOffer?.city?.location
+      ? [{
+        title: currentOffer.title,
+        latitude: currentOffer.city.location.latitude,
+        longitude: currentOffer.city.location.longitude,
+      }]
+      : []),
+  ], [nearbyOffers, currentOffer]);
+
+  const currentOfferPoint = useMemo<MapPoint | null>(() => {
+    if (!currentOffer?.city?.location) {
+      return null;
+    }
+
+    return {
+      title: currentOffer.title,
+      latitude: currentOffer.city.location.latitude,
+      longitude: currentOffer.city.location.longitude,
+    };
+  }, [currentOffer]);
+
+  const selectedPoint = hoveredPoint ?? currentOfferPoint;
+
+  useEffect(() => {
+    if (!offerId) {
+      return;
+    }
+
+    setHoveredPoint(null); // сброс наведения при переходе на новый оффер
+
+    const loadData = async () => {
+      try {
+        await dispatch(fetchOfferByIdAction(offerId)).unwrap();
+
+        await Promise.all([
+          dispatch(fetchOfferReviewsAction(offerId)),
+          dispatch(fetchNearbyOffersAction(offerId))
+        ]);
+
+      } catch (e) {
+        navigate(AppRoute.NotFound);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData().then();
+  }, [
+    offerId,
+    navigate,
+    dispatch
+  ]);
 
   if (!offerId) {
-    return <Link to={AppRoute.NotFound} />;
+    navigate(AppRoute.NotFound);
   }
 
-  const city = offers.find((offer) => offer.id === offerId)?.city;
+  if (isLoading) {
+    return <Loader />;
+  }
 
-  const handlePlaceCardHover = (offerId: string | null) => {
-    const cardTitle = NEARBY_OFFERS
-      .find(
-        (offer) => offer.id === offerId
-      )
-      ?.title || null;
+  const handleFavoriteButtonClick = (evt: SyntheticEvent<HTMLButtonElement>) => {
+    const btn = evt.currentTarget;
 
-    setSelectedPlaceCardTitle(cardTitle);
+    if (!currentOffer) {
+      return;
+    }
+
+    btn.disabled = true;
+
+    dispatch(changeOfferFavoriteStatusAction({
+      offerId: currentOffer.id,
+      status: !currentOffer?.isFavorite
+    })).finally(() => {
+      btn.disabled = false;
+    });
   };
 
-  if (!city) {
-    return <Link to={AppRoute.NotFound} />;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  const handlePlaceCardHover = (offerId: string | null) => {
+    const hoveredOffer = nearbyOffers.find((offer) => offer.id === offerId);
+
+    setHoveredPoint(
+      hoveredOffer
+        ? {
+          title: hoveredOffer.title,
+          latitude: hoveredOffer.location.latitude,
+          longitude: hoveredOffer.location.longitude,
+        }
+        : null
+    );
+  };
 
   return (
     <div className="page">
-      <Header userAuthStatus={props.userAuthStatus} />
+      <Header />
 
       <main className="page__main page__main--offer">
         <section className="offer">
           <div className="offer__gallery-container container">
             <div className="offer__gallery">
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/room.jpg"
-                  alt="Photo studio"
-                />
-              </div>
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/apartment-01.jpg"
-                  alt="Photo studio"
-                />
-              </div>
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/apartment-02.jpg"
-                  alt="Photo studio"
-                />
-              </div>
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/apartment-03.jpg"
-                  alt="Photo studio"
-                />
-              </div>
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/studio-01.jpg"
-                  alt="Photo studio"
-                />
-              </div>
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/apartment-01.jpg"
-                  alt="Photo studio"
-                />
-              </div>
+              {
+                currentOffer?.images.slice(0, IMAGE_COUNT).map((imgSrc) => (
+                  <div
+                    key={imgSrc}
+                    className="offer__image-wrapper"
+                  >
+                    <img
+                      className="offer__image"
+                      src={imgSrc}
+                      alt="Photo"
+                    />
+                  </div>
+                ))
+              }
             </div>
           </div>
           <div className="offer__container container">
             <div className="offer__wrapper">
-              <div className="offer__mark">
-                <span>Premium</span>
-              </div>
+              {
+                currentOffer?.isPremium && (
+                  <div className="offer__mark">
+                    <span>Premium</span>
+                  </div>
+                )
+              }
               <div className="offer__name-wrapper">
                 <h1 className="offer__name">
-                  Beautiful &amp; luxurious studio at great location
+                  {currentOffer?.title}
                 </h1>
                 <button
-                  className="offer__bookmark-button button"
+                  className={
+                    classNames(
+                      'offer__bookmark-button',
+                      'button',
+                      currentOffer?.isFavorite && 'offer__bookmark-button--active'
+                    )
+                  }
                   type="button"
+                  onClick={handleFavoriteButtonClick}
                 >
                   <svg
                     className="offer__bookmark-icon"
                     width="31"
                     height="33"
                   >
-                    <use xlinkHref="#icon-bookmark"></use>
+                    <use href="#icon-bookmark"></use>
                   </svg>
                   <span className="visually-hidden">To bookmarks</span>
                 </button>
               </div>
               <div className="offer__rating rating">
                 <div className="offer__stars rating__stars">
-                  <span style={{ width: '80%' }}></span>
+                  <span style={{ width: getRatingPercent(currentOffer?.rating) }}></span>
                   <span className="visually-hidden">Rating</span>
                 </div>
-                <span className="offer__rating-value rating__value">4.8</span>
+                <span className="offer__rating-value rating__value">{currentOffer?.rating}</span>
               </div>
               <ul className="offer__features">
-                <li className="offer__feature offer__feature--entire">
-                  Apartment
-                </li>
-                <li className="offer__feature offer__feature--bedrooms">
-                  3 Bedrooms
-                </li>
-                <li className="offer__feature offer__feature--adults">
-                  Max 4 adults
-                </li>
+                {
+                  currentOffer?.type && (
+                    <li className="offer__feature offer__feature--entire">
+                      {capitalizeFirstLetter(currentOffer?.type || '')}
+                    </li>
+                  )
+                }
+                {
+                  currentOffer?.bedrooms && (
+                    <li className="offer__feature offer__feature--bedrooms">
+                      {currentOffer?.bedrooms} Bedrooms
+                    </li>
+                  )
+                }
+                {
+                  currentOffer?.maxAdults && (
+                    <li className="offer__feature offer__feature--adults">
+                      Max {currentOffer?.maxAdults} adults
+                    </li>
+                  )
+                }
               </ul>
               <div className="offer__price">
-                <b className="offer__price-value">&euro;120</b>
+                <b className="offer__price-value">&euro;{currentOffer?.price}</b>
                 <span className="offer__price-text">&nbsp;night</span>
               </div>
               <div className="offer__inside">
                 <h2 className="offer__inside-title">What&apos;s inside</h2>
                 <ul className="offer__inside-list">
-                  <li className="offer__inside-item">
-                    Wi-Fi
-                  </li>
-                  <li className="offer__inside-item">
-                    Washing machine
-                  </li>
-                  <li className="offer__inside-item">
-                    Towels
-                  </li>
-                  <li className="offer__inside-item">
-                    Heating
-                  </li>
-                  <li className="offer__inside-item">
-                    Coffee machine
-                  </li>
-                  <li className="offer__inside-item">
-                    Baby seat
-                  </li>
-                  <li className="offer__inside-item">
-                    Kitchen
-                  </li>
-                  <li className="offer__inside-item">
-                    Dishwasher
-                  </li>
-                  <li className="offer__inside-item">
-                    Cabel TV
-                  </li>
-                  <li className="offer__inside-item">
-                    Fridge
-                  </li>
+                  {
+                    currentOffer?.goods.map((item) => (
+                      <li
+                        key={item}
+                        className="offer__inside-item"
+                      >
+                        {item}
+                      </li>
+                    ))
+                  }
                 </ul>
               </div>
               <div className="offer__host">
@@ -181,49 +267,61 @@ function OfferScreen (props: OfferScreenProps): ReactElement {
                   <div className="offer__avatar-wrapper offer__avatar-wrapper--pro user__avatar-wrapper">
                     <img
                       className="offer__avatar user__avatar"
-                      src="img/avatar-angelina.jpg"
+                      src={currentOffer?.host.avatarUrl}
                       width="74"
                       height="74"
                       alt="Host avatar"
                     />
                   </div>
-                  <span className="offer__user-name">
-                    Angelina
-                  </span>
-                  <span className="offer__user-status">
-                    Pro
-                  </span>
+                  <span className="offer__user-name">{currentOffer?.host.name}</span>
+                  {
+                    currentOffer?.host.isPro && (
+                      <span className="offer__user-status">Pro</span>
+                    )
+                  }
                 </div>
                 <div className="offer__description">
                   <p className="offer__text">
-                    A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam. The building is green and from 18th century.
+                    {currentOffer?.description}
                   </p>
                   <p className="offer__text">
-                    An independent House, strategically located between Rembrand Square and National Opera, but where the bustle of the city comes to rest in this alley flowery and colorful.
+                    {currentOffer?.title}
                   </p>
                 </div>
               </div>
 
-              <ReviewList reviews={reviews} />
+              {
+                currentOffer
+                && currentOfferReviews
+                && (
+                  <ReviewList
+                    offer={currentOffer}
+                    reviews={sortedOfferReviews}
+                  />
+                )
+              }
             </div>
           </div>
-          <Map
-            city={city}
-            points={NEARBY_OFFERS.map((offer) => ({
-              title: offer.title,
-              latitude: offer.location.latitude,
-              longitude: offer.location.longitude
-            }))}
-            className={'offer__map'}
-            selectedPointTitle={selectedPlaceCardTitle}
-          />
+          {
+            nearbyOffers
+            && currentOffer?.city
+            && selectedPoint
+            && (
+              <Map
+                city={currentOffer?.city}
+                points={mapPoints}
+                className={'offer__map'}
+                selectedPoint={selectedPoint}
+              />
+            )
+          }
         </section>
         <div className="container">
           <section className="near-places places">
             <h2 className="near-places__title">Other places in the neighbourhood</h2>
             <PlaceList
               type={'near-places'}
-              offers={NEARBY_OFFERS}
+              offers={nearbyOffers}
               onPlaceCardHover={handlePlaceCardHover}
             />
           </section>

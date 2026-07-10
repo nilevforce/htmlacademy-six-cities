@@ -1,16 +1,11 @@
 import { ReactElement } from 'react';
-import { AuthorizationStatus } from '../../constants.ts';
 import Header from '../../components/header/header.tsx';
 import Footer from '../../components/footer/footer.tsx';
 
-interface FavoritesScreenEmptyProps {
-  userAuthStatus: AuthorizationStatus;
-}
-
-function FavoritesScreenEmpty (props: FavoritesScreenEmptyProps): ReactElement {
+function FavoritesScreenEmpty (): ReactElement {
   return (
     <div className="page page--favorites-empty">
-      <Header userAuthStatus={props.userAuthStatus} />
+      <Header />
 
       <main className="page__main page__main--favorites page__main--favorites-empty">
         <div className="page__favorites-container container">

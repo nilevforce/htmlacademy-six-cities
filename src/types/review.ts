@@ -6,6 +6,6 @@ export type Review = {
     isPro: boolean;
   };
   rating: number;
-  text: string;
+  comment: string;
   date: string;
 }

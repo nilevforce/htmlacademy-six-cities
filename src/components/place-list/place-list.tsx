@@ -1,10 +1,9 @@
-import {
-  ReactElement,
-  SyntheticEvent,
-} from 'react';
+import { ReactElement, SyntheticEvent, } from 'react';
 import classNames from 'classnames';
 import { Offer } from '../../types/offer.ts';
 import PlaceCard from '../place-card/place-card.tsx';
+import { useAppDispatch } from '../../hooks';
+import { changeOfferFavoriteStatusAction } from '../../store/api-actions.ts';
 
 interface PlaceListProps {
   type: 'cities' | 'near-places';
@@ -16,16 +15,31 @@ function PlaceList (props: PlaceListProps): ReactElement {
   const {
     offers,
     type,
-    onPlaceCardHover
+    onPlaceCardHover,
   } = props;
 
+  const dispatch = useAppDispatch();
+
   const handleCardHover = (evt: SyntheticEvent<HTMLElement>) => {
-    const offerId = evt.currentTarget.dataset.offerId || null;
+    const offerId = evt.currentTarget.dataset.jsId || null;
     onPlaceCardHover(offerId);
   };
 
   const handleCardHoverLeave = () => {
     onPlaceCardHover(null);
+  };
+
+  const handleFavoriteButtonClick = (
+    element: HTMLButtonElement,
+    offerId: string,
+  ) => {
+    element.disabled = true;
+    dispatch(changeOfferFavoriteStatusAction({
+      offerId,
+      status: !offers.find((offer) => offer.id === offerId)?.isFavorite
+    })).finally(() => {
+      element.disabled = false;
+    });
   };
 
   return (
@@ -56,6 +70,7 @@ function PlaceList (props: PlaceListProps): ReactElement {
             }}
             onCardHover={handleCardHover}
             onCardLeave={handleCardHoverLeave}
+            onFavoriteButtonClick={handleFavoriteButtonClick}
           />
         ))
       }

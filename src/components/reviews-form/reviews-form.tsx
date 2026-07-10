@@ -5,34 +5,53 @@ import {
   useState
 } from 'react';
 
-type Rating = '1' | '2' | '3' | '4' | '5' | null;
+const FORM_REVIEW_MIN_LENGTH = 50;
+
+type Rating = 0 | 1 | 2 | 3 | 4 | 5;
 
 type FormData = {
   rating: Rating;
   review: string;
 }
 
-function ReviewsForm (): ReactElement {
+interface ReviewsFormProps {
+  isDisabled: boolean;
+  onSubmitForm: (data: FormData) => void;
+}
+
+function ReviewsForm (props: ReviewsFormProps): ReactElement {
+  const {
+    onSubmitForm,
+    isDisabled
+  } = props;
+
   const [formData, setFormData] = useState<FormData>({
-    rating: null,
+    rating: 0,
     review: '',
   });
 
+  const parseValue = (value: string) => {
+    const num = Number(value);
+    return Number.isNaN(num) ? value : num;
+  };
+
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
+    onSubmitForm(formData);
   };
 
   const handleInputChange =
     (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setFormData(
       ((prev) => ({
         ...prev,
-        [evt.target.name]: evt.target.value
+        [evt.target.name]: parseValue(evt.target.value)
       }))
     );
 
   const isFormValid = formData.rating
-    && formData.review.trim().length >= 50;
-  const isSubmitButtonDisabled = !isFormValid;
+    && formData.review.trim().length >= FORM_REVIEW_MIN_LENGTH;
+  const isFormDisabled = isDisabled;
+  const isSubmitButtonDisabled = !isFormValid || isFormDisabled;
 
   return (
     <form
@@ -53,8 +72,9 @@ function ReviewsForm (): ReactElement {
           value="5"
           id="5-stars"
           type="radio"
-          checked={formData.rating === '5'}
+          checked={formData.rating === 5}
           onChange={handleInputChange}
+          disabled={isFormDisabled}
         />
         <label
           htmlFor="5-stars"
@@ -76,8 +96,9 @@ function ReviewsForm (): ReactElement {
           value="4"
           id="4-stars"
           type="radio"
-          checked={formData.rating === '4'}
+          checked={formData.rating === 4}
           onChange={handleInputChange}
+          disabled={isFormDisabled}
         />
         <label
           htmlFor="4-stars"
@@ -99,8 +120,9 @@ function ReviewsForm (): ReactElement {
           value="3"
           id="3-stars"
           type="radio"
-          checked={formData.rating === '3'}
+          checked={formData.rating === 3}
           onChange={handleInputChange}
+          disabled={isFormDisabled}
         />
         <label
           htmlFor="3-stars"
@@ -122,8 +144,9 @@ function ReviewsForm (): ReactElement {
           value="2"
           id="2-stars"
           type="radio"
-          checked={formData.rating === '2'}
+          checked={formData.rating === 2}
           onChange={handleInputChange}
+          disabled={isFormDisabled}
         />
         <label
           htmlFor="2-stars"
@@ -145,8 +168,9 @@ function ReviewsForm (): ReactElement {
           value="1"
           id="1-star"
           type="radio"
-          checked={formData.rating === '1'}
+          checked={formData.rating === 1}
           onChange={handleInputChange}
+          disabled={isFormDisabled}
         />
         <label
           htmlFor="1-star"
@@ -167,7 +191,9 @@ function ReviewsForm (): ReactElement {
         id="review"
         name="review"
         placeholder="Tell how was your stay, what you like and what can be improved"
+        value={formData.review}
         onChange={handleInputChange}
+        disabled={isFormDisabled}
       >
       </textarea>
       <div className="reviews__button-wrapper">

@@ -15,7 +15,11 @@ interface MapProps {
   className?: string;
   city: City;
   points: MapPoint[];
-  selectedPointTitle: string | null;
+  selectedPoint: {
+    title: string;
+    latitude: number;
+    longitude: number;
+  } | null;
 }
 
 const defaultCustomIcon = leaflet.icon({
@@ -30,11 +34,16 @@ const currentCustomIcon = leaflet.icon({
   iconAnchor: [20, 40],
 });
 
+const isSamePoint = (
+  a: { latitude: number; longitude: number },
+  b: { latitude: number; longitude: number }
+): boolean => a.latitude === b.latitude && a.longitude === b.longitude;
+
 function MapComponent (props: MapProps): ReactElement {
   const {
     city,
     points,
-    selectedPointTitle
+    selectedPoint
   } = props;
 
   const mapRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -51,15 +60,27 @@ function MapComponent (props: MapProps): ReactElement {
     const markers = new Map<string, leaflet.Marker>();
 
     points.forEach((point) => {
+      const key = `${point.latitude}_${point.longitude}`;
+      const isSelected = selectedPoint && isSamePoint({
+        longitude: point.longitude,
+        latitude: point.latitude
+      }, {
+        longitude: selectedPoint.longitude,
+        latitude: selectedPoint.latitude
+      });
+
       const marker = leaflet
         .marker(
           { lat: point.latitude, lng: point.longitude },
-          { title: point.title, icon: defaultCustomIcon }
+          {
+            title: point.title,
+            icon: isSelected ? currentCustomIcon : defaultCustomIcon,
+          }
         )
         .bindTooltip(point.title)
         .addTo(map);
 
-      markers.set(point.title, marker);
+      markers.set(key, marker);
     });
 
     markersRef.current = markers;
@@ -68,13 +89,28 @@ function MapComponent (props: MapProps): ReactElement {
       markers.forEach((marker) => marker.remove());
       markersRef.current = new Map();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [points]);
 
   useEffect(() => {
-    markersRef.current.forEach((marker, title) => {
-      marker.setIcon(title === selectedPointTitle ? currentCustomIcon : defaultCustomIcon);
+    points.forEach((point) => {
+      const key = `${point.latitude}_${point.longitude}`;
+      const marker = markersRef.current.get(key);
+      const isSelected = selectedPoint && isSamePoint({
+        longitude: point.longitude,
+        latitude: point.latitude
+      }, {
+        longitude: selectedPoint.longitude,
+        latitude: selectedPoint.latitude
+      });
+
+      if (!marker) {
+        return;
+      }
+
+      marker.setIcon(isSelected ? currentCustomIcon : defaultCustomIcon);
     });
-  }, [selectedPointTitle]);
+  }, [selectedPoint, points]);
 
   return (
     <section

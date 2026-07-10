@@ -3,11 +3,14 @@ import { generatePath, Link } from 'react-router-dom';
 import { AppRoute } from '../../constants.ts';
 import { getRatingPercent } from '../../helpers';
 import classNames from 'classnames';
+import {
+  capitalizeFirstLetter
+} from '../../helpers/capitalize-first-letter.ts';
 
 const MAX_PLACE_CARD_RATING = 5;
 
 interface PlaceCardProps {
-  type: 'cities' | 'near-places';
+  type: 'cities' | 'near-places' | 'favorites';
   place: {
     id: string;
     imageSrc: string;
@@ -20,6 +23,7 @@ interface PlaceCardProps {
   };
   onCardHover?: (evt: SyntheticEvent<HTMLElement>) => void;
   onCardLeave?: (evt: SyntheticEvent<HTMLElement>) => void;
+  onFavoriteButtonClick: (element: HTMLButtonElement, placeId: string) => void;
 }
 
 function PlaceCard (props: PlaceCardProps): ReactElement {
@@ -27,8 +31,16 @@ function PlaceCard (props: PlaceCardProps): ReactElement {
     type,
     place,
     onCardHover,
-    onCardLeave
+    onCardLeave,
+    onFavoriteButtonClick
   } = props;
+
+  const handleFavoriteButtonClick = (evt: SyntheticEvent<HTMLButtonElement>) => {
+    onFavoriteButtonClick(
+      evt.currentTarget,
+      place.id
+    );
+  };
 
   const mark = place.isPremium ? 'Premium' : null;
   const linkToOffer = generatePath(AppRoute.Offer, { offerId: place.id });
@@ -39,10 +51,11 @@ function PlaceCard (props: PlaceCardProps): ReactElement {
         classNames(
           type === 'cities' && 'cities__card',
           type === 'near-places' && 'near-places__card',
+          type === 'favorites' && 'favorites__card',
           'place-card'
         )
       }
-      data-offer-id={place.id}
+      data-js-id={place.id}
       onMouseEnter={onCardHover}
       onMouseLeave={onCardLeave}
     >
@@ -58,6 +71,7 @@ function PlaceCard (props: PlaceCardProps): ReactElement {
           classNames(
             type === 'cities' && 'cities__image-wrapper',
             type === 'near-places' && 'near-places__image-wrapper',
+            type === 'favorites' && 'favorites__image-wrapper',
             'place-card__image-wrapper'
           )
         }
@@ -77,7 +91,14 @@ function PlaceCard (props: PlaceCardProps): ReactElement {
           />
         </Link>
       </div>
-      <div className="place-card__info">
+      <div
+        className={
+          classNames(
+            'place-card__info',
+            type === 'favorites' && 'favorites__card-info'
+          )
+        }
+      >
         <div className="place-card__price-wrapper">
           <div className="place-card__price">
             <b className="place-card__price-value">&euro;{place.price}</b>
@@ -90,6 +111,7 @@ function PlaceCard (props: PlaceCardProps): ReactElement {
               place.isFavorite && 'place-card__bookmark-button--active',
             ].filter(Boolean).join(' ')}
             type="button"
+            onClick={handleFavoriteButtonClick}
           >
             <svg
               className="place-card__bookmark-icon"
@@ -112,7 +134,7 @@ function PlaceCard (props: PlaceCardProps): ReactElement {
             {place.title}
           </Link>
         </h2>
-        <p className="place-card__type">{place.type}</p>
+        <p className="place-card__type">{capitalizeFirstLetter(place.type)}</p>
       </div>
     </article>
   );

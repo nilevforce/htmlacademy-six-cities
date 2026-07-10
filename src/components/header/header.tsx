@@ -2,16 +2,26 @@ import { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../constants.ts';
 import Logo from '../logo/logo.tsx';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { logoutAction } from '../../store/api-actions.ts';
 
 interface HeaderProps {
   variant?: 'full' | 'minimal';
-  userAuthStatus: AuthorizationStatus;
 }
 
 function Header ({
   variant = 'full',
-  userAuthStatus
 }: HeaderProps): ReactElement {
+  const userAuthStatus = useAppSelector((state) => state.authStatus);
+  const userEmail = useAppSelector((state) => state.user?.email);
+  const favoriteOffers = useAppSelector((state) => state.favoriteOffers);
+
+  const dispatch = useAppDispatch();
+
+  const handleLogoutClick = () => {
+    dispatch(logoutAction());
+  };
+
   return (
     <header className="header">
       <div className="container">
@@ -30,19 +40,20 @@ function Header ({
                         <li className="header__nav-item user">
                           <Link
                             className="header__nav-link header__nav-link--profile"
-                            to={AppRoute.UserProfile}
+                            to={AppRoute.Favorites}
                           >
                             <div className="header__avatar-wrapper user__avatar-wrapper">
                             </div>
-                            <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
-                            <span className="header__favorite-count">3</span>
+                            <span className="header__user-name user__name">{userEmail}</span>
+                            <span className="header__favorite-count">{favoriteOffers.length}</span>
                           </Link>
                         </li>
 
                         <li className="header__nav-item">
                           <Link
                             className="header__nav-link"
-                            to={AppRoute.Logout}
+                            onClick={handleLogoutClick}
+                            to={AppRoute.Root}
                           >
                             <span className="header__signout">Sign out</span>
                           </Link>

@@ -1,22 +1,11 @@
 import { ReactElement } from 'react';
-import {
-  AuthorizationStatus,
-  CITIES
-} from '../../constants.ts';
+import { CITIES } from '../../constants.ts';
 import Header from '../../components/header/header.tsx';
 import LocationList from '../../components/location-list/location-list.tsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { changeCity } from '../../store/action.ts';
 
-interface WelcomeScreenEmptyProps {
-  userAuthStatus: AuthorizationStatus;
-}
-
-function WelcomeScreenEmpty (props: WelcomeScreenEmptyProps): ReactElement {
-  const {
-    userAuthStatus,
-  } = props;
-
+function WelcomeScreenEmpty (): ReactElement {
   const currentCity = useAppSelector((state) => state.city);
   const dispatch = useAppDispatch();
 
@@ -26,7 +15,7 @@ function WelcomeScreenEmpty (props: WelcomeScreenEmptyProps): ReactElement {
 
   return (
     <div className="page page--gray page--main">
-      <Header userAuthStatus={userAuthStatus} />
+      <Header />
 
       <main className="page__main page__main--index page__main--index-empty">
         <h1 className="visually-hidden">Cities</h1>
