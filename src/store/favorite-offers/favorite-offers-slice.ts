@@ -49,6 +49,12 @@ const favoriteOffersSlice = createSlice({
         state.isLoading = true;
         state.hasError = false;
       })
+
+      // TODO:
+      //  Для того чтобы добавить оффер в список FAVORITE_OFFERS
+      //  нужно привести OfferDetails к типу Offer.
+      //  Можно замапить OfferDetails прям тут вручную,
+      //  но я хочу, чтобы Thunk уже готовый результат с типом Offer возвращал
       .addCase(changeOfferFavoriteStatus.fulfilled, (state) => {
         // const updatedOffer = action.payload;
 

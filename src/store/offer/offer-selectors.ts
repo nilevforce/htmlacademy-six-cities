@@ -1,6 +1,6 @@
 import { NameSpace } from '../../constants.ts';
 
-import { State } from '../store.ts';
+import { State } from '../../types/state.ts';
 
 const getOffer = (state: State) => state[NameSpace.Offer].offer;
 const getOfferReviews = (state: State) => state[NameSpace.Offer].offerReviews;

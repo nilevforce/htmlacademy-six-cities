@@ -14,7 +14,9 @@ const checkAuth = createAsyncThunk<UserData, undefined, {
   };
 }>(
   'user/checkAuth',
-  async (_arg, { extra: { api } }) => {
+  async (_arg, {
+    extra: { api }
+  }) => {
     const { data } = await api.get<UserData>(APIRoute.Login);
     return data;
   }
@@ -26,7 +28,13 @@ const login = createAsyncThunk<UserData, AuthData, {
   };
 }>(
   'user/login',
-  async ({ email, password }, { dispatch, extra: { api } }) => {
+  async ({
+    email,
+    password
+  }, {
+    dispatch,
+    extra: { api }
+  }) => {
     const { data } = await api.post<UserData>(APIRoute.Login, {
       email,
       password
@@ -46,7 +54,9 @@ const logout = createAsyncThunk<void, undefined, {
   };
 }>(
   'user/logout',
-  async (_arg, { extra: { api } }) => {
+  async (_arg, {
+    extra: { api }
+  }) => {
     await api.delete<UserData>(APIRoute.Logout);
     dropToken();
   }
