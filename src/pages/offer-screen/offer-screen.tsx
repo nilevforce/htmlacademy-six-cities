@@ -20,12 +20,6 @@ import {
   useAppSelector
 } from '../../hooks';
 import {
-  changeOfferFavoriteStatusAction,
-  fetchNearbyOffersAction,
-  fetchOfferByIdAction,
-  fetchOfferReviewsAction,
-} from '../../store/api-actions.ts';
-import {
   Offer,
   OfferDetails
 } from '../../types/offer.ts';
@@ -37,6 +31,19 @@ import { getRatingPercent } from '../../helpers';
 import {
   capitalizeFirstLetter
 } from '../../helpers/capitalize-first-letter.ts';
+import {
+  getNearbyOffers,
+  getOffer,
+  getOfferReviews
+} from '../../store/offer/offer-selectors.ts';
+import {
+  fetchNearbyOffers,
+  fetchOfferById,
+  fetchOfferReviews
+} from '../../store/offer/offer-api-actions.ts';
+import {
+  changeOfferFavoriteStatus
+} from '../../store/favorite-offers/favorite-offers-api-actions.ts';
 
 const IMAGE_COUNT: number = 6;
 const MAX_REVIEW_COUNT: number = 10;
@@ -45,9 +52,9 @@ function OfferScreen (): ReactElement {
   const { offerId } = useParams();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const currentOffer = useAppSelector<OfferDetails | null>((state) => state.currentOffer);
-  const currentOfferReviews = useAppSelector<Review[] | []>((state) => state.currentOfferReviews);
-  const nearbyOffers = useAppSelector<Offer[]>((state) => state.nearbyOffers).slice(0, 3);
+  const currentOffer = useAppSelector<OfferDetails | null>(getOffer);
+  const currentOfferReviews = useAppSelector<Review[] | []>(getOfferReviews);
+  const nearbyOffers = useAppSelector<Offer[]>(getNearbyOffers).slice(0, 3);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hoveredPoint, setHoveredPoint] = useState<MapPoint | null>(null);
 
@@ -93,11 +100,11 @@ function OfferScreen (): ReactElement {
 
     const loadData = async () => {
       try {
-        await dispatch(fetchOfferByIdAction(offerId)).unwrap();
+        await dispatch(fetchOfferById(offerId)).unwrap();
 
         await Promise.all([
-          dispatch(fetchOfferReviewsAction(offerId)),
-          dispatch(fetchNearbyOffersAction(offerId))
+          dispatch(fetchOfferReviews(offerId)),
+          dispatch(fetchNearbyOffers(offerId))
         ]);
 
       } catch (e) {
@@ -131,7 +138,7 @@ function OfferScreen (): ReactElement {
 
     btn.disabled = true;
 
-    dispatch(changeOfferFavoriteStatusAction({
+    dispatch(changeOfferFavoriteStatus({
       offerId: currentOffer.id,
       status: !currentOffer?.isFavorite
     })).finally(() => {

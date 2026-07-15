@@ -3,14 +3,15 @@ import { CITIES } from '../../constants.ts';
 import Header from '../../components/header/header.tsx';
 import LocationList from '../../components/location-list/location-list.tsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { changeCity } from '../../store/action.ts';
+import { getCurrentCity } from '../../store/city/city-selectors.ts';
+import { changeCity } from '../../store/city/city-actions.ts';
 
 function WelcomeScreenEmpty (): ReactElement {
-  const currentCity = useAppSelector((state) => state.city);
+  const currentCity = useAppSelector(getCurrentCity);
   const dispatch = useAppDispatch();
 
   const handleLocationChange = (city: string) => {
-    dispatch(changeCity({ city }));
+    dispatch(changeCity(city));
   };
 
   return (

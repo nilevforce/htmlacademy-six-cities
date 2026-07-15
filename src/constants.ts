@@ -1,10 +1,8 @@
 enum AppRoute {
   Root = '/',
   Login = '/login',
-  Logout = '/logout',
   Favorites = '/favorites',
   Offer = '/offer/:offerId',
-  UserProfile = '/me',
   NotFound = '/404'
 }
 
@@ -42,10 +40,19 @@ enum APIRoute {
   Logout = '/logout'
 }
 
+enum NameSpace {
+  Offers = 'OFFERS',
+  Offer = 'OFFER',
+  FavoriteOffers = 'FAVORITE_OFFERS',
+  User = 'USER',
+  City = 'CITY'
+}
+
 export {
   AppRoute,
   AuthorizationStatus,
   CITIES,
   SortType,
-  APIRoute
+  APIRoute,
+  NameSpace
 };

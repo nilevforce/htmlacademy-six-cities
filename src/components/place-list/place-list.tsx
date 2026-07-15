@@ -3,7 +3,9 @@ import classNames from 'classnames';
 import { Offer } from '../../types/offer.ts';
 import PlaceCard from '../place-card/place-card.tsx';
 import { useAppDispatch } from '../../hooks';
-import { changeOfferFavoriteStatusAction } from '../../store/api-actions.ts';
+import {
+  changeOfferFavoriteStatus
+} from '../../store/favorite-offers/favorite-offers-api-actions.ts';
 
 interface PlaceListProps {
   type: 'cities' | 'near-places';
@@ -34,7 +36,7 @@ function PlaceList (props: PlaceListProps): ReactElement {
     offerId: string,
   ) => {
     element.disabled = true;
-    dispatch(changeOfferFavoriteStatusAction({
+    dispatch(changeOfferFavoriteStatus({
       offerId,
       status: !offers.find((offer) => offer.id === offerId)?.isFavorite
     })).finally(() => {

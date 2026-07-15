@@ -3,7 +3,14 @@ import { Link } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../constants.ts';
 import Logo from '../logo/logo.tsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { logoutAction } from '../../store/api-actions.ts';
+import {
+  getAuthStatus,
+  getUserEmail
+} from '../../store/user/user-selectors.ts';
+import {
+  getFavoriteOffersCount
+} from '../../store/favorite-offers/favorite-offers-selectors.ts';
+import { logout } from '../../store/user/user-api-actions.ts';
 
 interface HeaderProps {
   variant?: 'full' | 'minimal';
@@ -12,14 +19,14 @@ interface HeaderProps {
 function Header ({
   variant = 'full',
 }: HeaderProps): ReactElement {
-  const userAuthStatus = useAppSelector((state) => state.authStatus);
-  const userEmail = useAppSelector((state) => state.user?.email);
-  const favoriteOffers = useAppSelector((state) => state.favoriteOffers);
+  const userAuthStatus = useAppSelector(getAuthStatus);
+  const userEmail = useAppSelector(getUserEmail);
+  const favoriteOffersCount = useAppSelector(getFavoriteOffersCount);
 
   const dispatch = useAppDispatch();
 
   const handleLogoutClick = () => {
-    dispatch(logoutAction());
+    dispatch(logout());
   };
 
   return (
@@ -45,7 +52,7 @@ function Header ({
                             <div className="header__avatar-wrapper user__avatar-wrapper">
                             </div>
                             <span className="header__user-name user__name">{userEmail}</span>
-                            <span className="header__favorite-count">{favoriteOffers.length}</span>
+                            <span className="header__favorite-count">{favoriteOffersCount}</span>
                           </Link>
                         </li>
 

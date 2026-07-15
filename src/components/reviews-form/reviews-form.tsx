@@ -16,7 +16,10 @@ type FormData = {
 
 interface ReviewsFormProps {
   isDisabled: boolean;
-  onSubmitForm: (data: FormData) => void;
+  onSubmitForm: (
+    data: FormData,
+    clearForm: () => void
+  ) => void;
 }
 
 function ReviewsForm (props: ReviewsFormProps): ReactElement {
@@ -30,6 +33,11 @@ function ReviewsForm (props: ReviewsFormProps): ReactElement {
     review: '',
   });
 
+  const clearForm = () => setFormData({
+    rating: 0,
+    review: ''
+  });
+
   const parseValue = (value: string) => {
     const num = Number(value);
     return Number.isNaN(num) ? value : num;
@@ -37,7 +45,7 @@ function ReviewsForm (props: ReviewsFormProps): ReactElement {
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
-    onSubmitForm(formData);
+    onSubmitForm(formData, clearForm);
   };
 
   const handleInputChange =

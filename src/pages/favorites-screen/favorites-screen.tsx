@@ -5,9 +5,12 @@ import FavoritesLocation from '../favorites-location/favorites-location.tsx';
 import { useAppSelector } from '../../hooks';
 import FavoritesScreenEmpty
   from '../favorites-screen-empty/favorites-screen-empty.tsx';
+import {
+  getFavoriteOffers
+} from '../../store/favorite-offers/favorite-offers-selectors.ts';
 
 function FavoritesScreen (): ReactElement {
-  const favoriteOffers = useAppSelector((state) => state.favoriteOffers);
+  const favoriteOffers = useAppSelector(getFavoriteOffers);
 
   if (favoriteOffers.length === 0) {
     return <FavoritesScreenEmpty />;

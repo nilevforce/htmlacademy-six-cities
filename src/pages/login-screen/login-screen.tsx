@@ -3,11 +3,12 @@ import { AppRoute, AuthorizationStatus, CITIES } from '../../constants.ts';
 import Header from '../../components/header/header.tsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { Link, Navigate } from 'react-router-dom';
-import { loginAction } from '../../store/api-actions.ts';
 import { getRandomArrayItem } from '../../helpers/get-random-array-item.ts';
+import { getAuthStatus } from '../../store/user/user-selectors.ts';
+import { login } from '../../store/user/user-api-actions.ts';
 
 function LoginScreen (): ReactElement {
-  const authStatus = useAppSelector((state) => state.authStatus);
+  const authStatus = useAppSelector(getAuthStatus);
   const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const randomCity = getRandomArrayItem(CITIES);
@@ -24,7 +25,7 @@ function LoginScreen (): ReactElement {
     evt.preventDefault();
 
     if (emailRef.current !== null && passwordRef.current !== null) {
-      dispatch(loginAction({
+      dispatch(login({
         email: emailRef.current.value,
         password: passwordRef.current.value
       }));

@@ -1,10 +1,12 @@
 import { ReactElement } from 'react';
 import { Offer } from '../../types/offer.ts';
 import PlaceCard from '../../components/place-card/place-card.tsx';
-import { changeOfferFavoriteStatusAction } from '../../store/api-actions.ts';
 import { useAppDispatch } from '../../hooks';
 import { Link } from 'react-router-dom';
 import { AppRoute } from '../../constants.ts';
+import {
+  changeOfferFavoriteStatus
+} from '../../store/favorite-offers/favorite-offers-api-actions.ts';
 
 interface FavoritesLocationProps {
   cityName: string;
@@ -24,7 +26,7 @@ function FavoritesLocation (props: FavoritesLocationProps): ReactElement {
     offerId: string,
   ) => {
     element.disabled = true;
-    dispatch(changeOfferFavoriteStatusAction({
+    dispatch(changeOfferFavoriteStatus({
       offerId,
       status: !favorites.find((offer) => offer.id === offerId)?.isFavorite
     })).finally(() => {

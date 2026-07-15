@@ -4,8 +4,9 @@ import Review from '../review/review.tsx';
 import { Review as ReviewType } from '../../types/review.ts';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { AuthorizationStatus } from '../../constants.ts';
-import { addOfferReviewAction } from '../../store/api-actions.ts';
 import { OfferDetails } from '../../types/offer.ts';
+import { getAuthStatus } from '../../store/user/user-selectors.ts';
+import { addOfferReview } from '../../store/offer/offer-api-actions.ts';
 
 interface ReviewListProps {
   offer: OfferDetails;
@@ -18,24 +19,31 @@ function ReviewList (props: ReviewListProps): ReactElement {
     reviews,
   } = props;
 
-  const authStatus = useAppSelector((state) => state.authStatus);
+  const authStatus = useAppSelector(getAuthStatus);
   const dispatch = useAppDispatch();
   const [isFormDisabled, setIsFormDisabled] = useState(false);
 
-  const handleOnSubmitForm = (data: {
-    review: string;
-    rating: number;
-  }) => {
+  const handleOnSubmitForm = (
+    data: {
+      review: string;
+      rating: number;
+    },
+    clearForm: () => void
+  ) => {
     setIsFormDisabled(true);
 
+    // TODO: Понять, почему не отлавливается ошибка
     dispatch(
-      addOfferReviewAction({
+      addOfferReview({
         offerId: offer.id,
         review: {
           comment: data.review,
           rating: data.rating
         }
       }))
+      .then(() => {
+        clearForm();
+      })
       .finally(() => {
         setIsFormDisabled(false);
       });

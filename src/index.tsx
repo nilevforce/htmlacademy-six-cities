@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import App from './components/app/app.tsx';
-import index from './store';
+import { store } from './store/store.ts';
 import { ToastContainer } from 'react-toastify';
 
 const root = ReactDOM.createRoot(
@@ -11,7 +11,7 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <StrictMode>
-    <Provider store={index}>
+    <Provider store={store}>
       <ToastContainer />
       <App />
     </Provider>

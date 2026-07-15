@@ -8,12 +8,14 @@ import PlaceList from '../../components/place-list/place-list.tsx';
 import LocationList from '../../components/location-list/location-list.tsx';
 import Map from '../../components/map/map.tsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { changeCity } from '../../store/action.ts';
 import WelcomeScreenEmpty
   from '../welcome-screen-empty/welcome-screen-empty.tsx';
 import SortList from '../../components/sort-list/sort-list.tsx';
 import { useSearchParams } from 'react-router-dom';
 import { MapPoint } from '../../types/map-points.ts';
+import { getCurrentCity } from '../../store/city/city-selectors.ts';
+import { getOffers } from '../../store/offers/offers-selectors.ts';
+import { changeCity } from '../../store/city/city-actions.ts';
 
 function WelcomeScreen (): ReactElement {
   const dispatch = useAppDispatch();
@@ -22,14 +24,14 @@ function WelcomeScreen (): ReactElement {
   useEffect(() => {
     const cityFromUrl = searchParams.get('city');
     if (cityFromUrl && CITIES.includes(cityFromUrl)) {
-      dispatch(changeCity({ city: cityFromUrl }));
+      dispatch(changeCity(cityFromUrl));
       setSearchParams({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  const currentCity = useAppSelector((state) => state.city);
-  const offers = useAppSelector((state) => state.offers);
+  const currentCity = useAppSelector(getCurrentCity);
+  const offers = useAppSelector(getOffers);
 
   const [currentSortType, setCurrentSortType] = useState<SortType>(SortType.Popular);
   const [hoveredPoint, setHoveredPoint] = useState<MapPoint | null>(null);
@@ -79,7 +81,7 @@ function WelcomeScreen (): ReactElement {
     );
   };
 
-  const handleLocationChange = (city: string) => dispatch(changeCity({ city }));
+  const handleLocationChange = (city: string) => dispatch(changeCity(city));
 
   const handleSortTypeChange = (sortType: SortType) => {
     if (!sortType) {
