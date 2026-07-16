@@ -1,16 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Offer } from '../../types/offer.ts';
 import { NameSpace } from '../../constants.ts';
 import { fetchOffers } from './offers-api-actions.ts';
 import {
   changeOfferFavoriteStatus
 } from '../favorite-offers/favorite-offers-api-actions.ts';
-
-interface OffersState {
-  offers: Offer[];
-  isLoading: boolean;
-  hasError: boolean;
-}
+import type { OffersState } from '../../types/state.ts';
 
 const initialState: OffersState = {
   offers: [],

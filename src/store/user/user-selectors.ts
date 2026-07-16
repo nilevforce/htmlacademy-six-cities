@@ -1,8 +1,8 @@
 import { NameSpace } from '../../constants.ts';
-import { State } from '../../types/state.ts';
+import type { RootState } from '../../types/state.ts';
 
-const getAuthStatus = (state: State) => state[NameSpace.User].auth.status;
-const getUserEmail = (state: State) => state[NameSpace.User].user?.email;
+const getAuthStatus = (state: RootState) => state[NameSpace.User].auth.status;
+const getUserEmail = (state: RootState) => state[NameSpace.User].user?.email;
 
 export {
   getAuthStatus,

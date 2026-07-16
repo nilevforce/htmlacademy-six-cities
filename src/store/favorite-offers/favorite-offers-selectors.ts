@@ -1,9 +1,9 @@
 import { NameSpace } from '../../constants.ts';
 
-import { State } from '../../types/state.ts';
+import type { RootState } from '../../types/state.ts';
 
-const getFavoriteOffers = (state: State) => state[NameSpace.FavoriteOffers].offers;
-const getFavoriteOffersCount = (state: State) => state[NameSpace.FavoriteOffers].offers.length;
+const getFavoriteOffers = (state: RootState) => state[NameSpace.FavoriteOffers].offers;
+const getFavoriteOffersCount = (state: RootState) => state[NameSpace.FavoriteOffers].offers.length;
 
 export {
   getFavoriteOffers,

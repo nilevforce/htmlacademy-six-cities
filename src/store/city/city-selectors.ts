@@ -1,7 +1,7 @@
 import { NameSpace } from '../../constants.ts';
-import { State } from '../../types/state.ts';
+import type { RootState } from '../../types/state.ts';
 
-const getCurrentCity = (state: State) => state[NameSpace.City].currentCity;
+const getCurrentCity = (state: RootState) => state[NameSpace.City].currentCity;
 
 export {
   getCurrentCity

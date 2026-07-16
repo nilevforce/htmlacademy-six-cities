@@ -7,6 +7,7 @@ import { dropToken, setToken } from '../../services/token.ts';
 import {
   fetchFavoriteOffers
 } from '../favorite-offers/favorite-offers-api-actions.ts';
+import type { RootState } from '../../types/state.ts';
 
 const checkAuth = createAsyncThunk<UserData, undefined, {
   extra: {
@@ -22,7 +23,10 @@ const checkAuth = createAsyncThunk<UserData, undefined, {
   }
 );
 
-const login = createAsyncThunk<UserData, AuthData, {
+const login = createAsyncThunk<
+  UserData,
+  AuthData, {
+  state: RootState;
   extra: {
     api: AxiosInstance;
   };

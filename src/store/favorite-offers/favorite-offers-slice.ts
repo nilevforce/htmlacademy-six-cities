@@ -1,16 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { NameSpace } from '../../constants.ts';
-import { Offer } from '../../types/offer.ts';
 import {
   changeOfferFavoriteStatus,
   fetchFavoriteOffers
 } from './favorite-offers-api-actions.ts';
-
-interface FavoriteOffersState {
-  offers: Offer[];
-  isLoading: boolean;
-  hasError: boolean;
-}
+import type { FavoriteOffersState } from '../../types/state.ts';
 
 const initialState: FavoriteOffersState = {
   offers: [],
@@ -49,19 +43,25 @@ const favoriteOffersSlice = createSlice({
         state.isLoading = true;
         state.hasError = false;
       })
-
-      // TODO:
-      //  Для того чтобы добавить оффер в список FAVORITE_OFFERS
-      //  нужно привести OfferDetails к типу Offer.
-      //  Можно замапить OfferDetails прям тут вручную,
-      //  но я хочу, чтобы Thunk уже готовый результат с типом Offer возвращал
-      .addCase(changeOfferFavoriteStatus.fulfilled, (state) => {
-        // const updatedOffer = action.payload;
+      .addCase(changeOfferFavoriteStatus.fulfilled, (state, action) => {
+        const updatedOffer = action.payload;
 
         state.isLoading = false;
         state.hasError = false;
 
-        // const offerInList = state.offers.find((offer) => offer.id === updatedOffer.id);
+        const index = state.offers.findIndex((offer) => offer.id === updatedOffer.id);
+
+        if (updatedOffer.isFavorite) {
+          if (index === -1) {
+            state.offers.push(updatedOffer);
+          } else {
+            state.offers[index] = updatedOffer;
+          }
+        } else {
+          if (index !== -1) {
+            state.offers.splice(index, 1);
+          }
+        }
       })
       .addCase(changeOfferFavoriteStatus.rejected, (state) => {
         state.isLoading = false;

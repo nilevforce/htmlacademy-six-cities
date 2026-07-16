@@ -1,7 +1,5 @@
-import { Offer, OfferDetails } from '../../types/offer.ts';
 import { createSlice } from '@reduxjs/toolkit';
 import { NameSpace } from '../../constants.ts';
-import { Review } from '../../types/review.ts';
 import {
   fetchNearbyOffers,
   fetchOfferById,
@@ -10,14 +8,7 @@ import {
 import {
   changeOfferFavoriteStatus
 } from '../favorite-offers/favorite-offers-api-actions.ts';
-
-interface OfferState {
-  offer: OfferDetails | null;
-  offerReviews: Review[];
-  nearbyOffers: Offer[];
-  isLoading: boolean;
-  hasError: boolean;
-}
+import type { OfferState } from '../../types/state.ts';
 
 const initialState: OfferState = {
   offer: null,

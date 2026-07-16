@@ -1,18 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { AuthorizationStatus, NameSpace } from '../../constants.ts';
 import { checkAuth, login, logout } from './user-api-actions.ts';
-
-interface UserState {
-  user: {
-    email: string;
-    name: string;
-    avatarUrl: string;
-    isPro: boolean;
-  } | null;
-  auth: {
-    status: AuthorizationStatus;
-  };
-}
+import type { UserState } from '../../types/state.ts';
 
 const initialState: UserState = {
   user: null,
