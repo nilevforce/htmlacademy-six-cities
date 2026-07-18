@@ -32,7 +32,6 @@ function ReviewList (props: ReviewListProps): ReactElement {
   ) => {
     setIsFormDisabled(true);
 
-    // TODO: Понять, почему не отлавливается ошибка
     dispatch(
       addOfferReview({
         offerId: offer.id,
@@ -41,6 +40,7 @@ function ReviewList (props: ReviewListProps): ReactElement {
           rating: data.rating
         }
       }))
+      .unwrap()
       .then(() => {
         clearForm();
       })

@@ -5,7 +5,7 @@ import { APIRoute } from '../../constants.ts';
 import { Review } from '../../types/review.ts';
 import { ReviewData } from '../../types/review-data.ts';
 import { toast } from 'react-toastify';
-import type { AppDispatch, RootState } from '../../types/state.ts';
+import type { RootState } from '../../types/state.ts';
 
 const fetchOfferById = createAsyncThunk<OfferDetails, Offer['id'], {
   extra: {
@@ -50,7 +50,6 @@ const addOfferReview = createAsyncThunk<Review, {
   offerId: string;
   review: ReviewData;
 }, {
-  dispatch: AppDispatch;
   state: RootState;
   extra: {
     api: AxiosInstance;
@@ -65,7 +64,7 @@ const addOfferReview = createAsyncThunk<Review, {
       rating: review.rating,
     });
 
-    toast.success('⭐ Review successfully added!');
+    toast.info('⭐ Review successfully added!');
 
     return data;
   }

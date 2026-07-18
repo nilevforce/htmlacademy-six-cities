@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { NameSpace } from '../../constants.ts';
 import {
+  addOfferReview,
   fetchNearbyOffers,
   fetchOfferById,
   fetchOfferReviews
@@ -87,6 +88,11 @@ const offerSlice = createSlice({
         if (nearbyOffer) {
           nearbyOffer.isFavorite = updatedOfferIsFavorite;
         }
+      })
+
+      // Offer review
+      .addCase(addOfferReview.fulfilled, (state, action) => {
+        state.offerReviews.push(action.payload);
       })
 });
 
