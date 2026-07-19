@@ -40,7 +40,7 @@ function ReviewsForm (props: ReviewsFormProps): ReactElement {
 
   const parseValue = (value: string) => {
     const num = Number(value);
-    return Number.isNaN(num) ? value : num;
+    return !value || Number.isNaN(num) ? value : num;
   };
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
@@ -57,7 +57,7 @@ function ReviewsForm (props: ReviewsFormProps): ReactElement {
     );
 
   const isFormValid = formData.rating
-    && formData.review.trim().length >= FORM_REVIEW_MIN_LENGTH;
+    && formData.review?.trim().length >= FORM_REVIEW_MIN_LENGTH;
   const isFormDisabled = isDisabled;
   const isSubmitButtonDisabled = !isFormValid || isFormDisabled;
 

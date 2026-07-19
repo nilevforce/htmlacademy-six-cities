@@ -1,4 +1,4 @@
-import { ReactElement, SyntheticEvent } from 'react';
+import { memo, ReactElement, SyntheticEvent } from 'react';
 import { generatePath, Link } from 'react-router-dom';
 import { AppRoute } from '../../constants.ts';
 import { getRatingPercent } from '../../helpers';
@@ -140,4 +140,4 @@ function PlaceCard (props: PlaceCardProps): ReactElement {
   );
 }
 
-export default PlaceCard;
+export default memo(PlaceCard);

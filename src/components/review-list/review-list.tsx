@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import ReviewsForm from '../reviews-form/reviews-form.tsx';
 import Review from '../review/review.tsx';
 import { Review as ReviewType } from '../../types/review.ts';
@@ -23,7 +23,7 @@ function ReviewList (props: ReviewListProps): ReactElement {
   const dispatch = useAppDispatch();
   const [isFormDisabled, setIsFormDisabled] = useState(false);
 
-  const handleOnSubmitForm = (
+  const handleOnSubmitForm = useCallback((
     data: {
       review: string;
       rating: number;
@@ -47,7 +47,7 @@ function ReviewList (props: ReviewListProps): ReactElement {
       .finally(() => {
         setIsFormDisabled(false);
       });
-  };
+  }, []);
 
   return (
     <section className="offer__reviews reviews">

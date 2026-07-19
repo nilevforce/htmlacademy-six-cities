@@ -12,7 +12,6 @@ const initialState: FavoriteOffersState = {
   hasError: false
 };
 
-// TODO: Добавить обработку изменения избранного оффера
 const favoriteOffersSlice = createSlice({
   name: NameSpace.FavoriteOffers,
   initialState,

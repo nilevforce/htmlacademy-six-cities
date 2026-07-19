@@ -48,6 +48,7 @@ import {
 const IMAGE_COUNT: number = 6;
 const MAX_REVIEW_COUNT: number = 10;
 
+// TODO: Закончить оптимизацию компонента
 function OfferScreen (): ReactElement {
   const { offerId } = useParams();
   const dispatch = useAppDispatch();
@@ -58,11 +59,11 @@ function OfferScreen (): ReactElement {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hoveredPoint, setHoveredPoint] = useState<MapPoint | null>(null);
 
-  const sortedOfferReviews = [...currentOfferReviews]
+  const sortedOfferReviews = useMemo(() => [...currentOfferReviews]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, MAX_REVIEW_COUNT);
+    .slice(0, MAX_REVIEW_COUNT), [currentOfferReviews]);
 
-  const mapPoints = useMemo<MapPoint[]>(() => [
+  const mapPoints = useMemo(() => [
     ...nearbyOffers.map((offer) => ({
       title: offer.title,
       latitude: offer.location.latitude,
@@ -77,7 +78,7 @@ function OfferScreen (): ReactElement {
       : []),
   ], [nearbyOffers, currentOffer]);
 
-  const currentOfferPoint = useMemo<MapPoint | null>(() => {
+  const currentOfferPoint = useMemo(() => {
     if (!currentOffer?.city?.location) {
       return null;
     }
@@ -96,7 +97,7 @@ function OfferScreen (): ReactElement {
       return;
     }
 
-    setHoveredPoint(null); // сброс наведения при переходе на новый оффер
+    setHoveredPoint(null);
 
     const loadData = async () => {
       try {
@@ -106,7 +107,6 @@ function OfferScreen (): ReactElement {
           dispatch(fetchOfferReviews(offerId)),
           dispatch(fetchNearbyOffers(offerId))
         ]);
-
       } catch (e) {
         navigate(AppRoute.NotFound);
       } finally {

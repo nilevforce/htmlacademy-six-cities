@@ -1,4 +1,5 @@
 import {
+  memo,
   MutableRefObject,
   ReactElement, SyntheticEvent, useEffect,
   useRef
@@ -117,4 +118,4 @@ function SortList (props: SortListProps): ReactElement {
   );
 }
 
-export default SortList;
+export default memo(SortList);

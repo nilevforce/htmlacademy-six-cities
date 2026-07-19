@@ -1,4 +1,4 @@
-import { ReactElement, SyntheticEvent, } from 'react';
+import { memo, ReactElement, SyntheticEvent, } from 'react';
 import classNames from 'classnames';
 import { Offer } from '../../types/offer.ts';
 import PlaceCard from '../place-card/place-card.tsx';
@@ -80,4 +80,4 @@ function PlaceList (props: PlaceListProps): ReactElement {
   );
 }
 
-export default PlaceList;
+export default memo(PlaceList);

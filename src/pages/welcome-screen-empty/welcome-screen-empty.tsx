@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { CITIES } from '../../constants.ts';
 import Header from '../../components/header/header.tsx';
 import LocationList from '../../components/location-list/location-list.tsx';
@@ -10,9 +10,10 @@ function WelcomeScreenEmpty (): ReactElement {
   const currentCity = useAppSelector(getCurrentCity);
   const dispatch = useAppDispatch();
 
-  const handleLocationChange = (city: string) => {
-    dispatch(changeCity(city));
-  };
+  const handleLocationChange = useCallback(
+    (city: string) => dispatch(changeCity(city)),
+    []
+  );
 
   return (
     <div className="page page--gray page--main">

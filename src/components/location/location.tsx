@@ -1,4 +1,4 @@
-import { ReactElement, SyntheticEvent } from 'react';
+import { memo, ReactElement, SyntheticEvent } from 'react';
 import classNames from 'classnames';
 
 interface LocationProps {
@@ -35,4 +35,4 @@ function Location (props: LocationProps): ReactElement {
   );
 }
 
-export default Location;
+export default memo(Location);

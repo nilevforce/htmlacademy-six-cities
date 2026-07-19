@@ -1,4 +1,4 @@
-import { ReactElement, SyntheticEvent } from 'react';
+import { memo, ReactElement, SyntheticEvent } from 'react';
 import Location from '../location/location.tsx';
 
 interface LocationListProps {
@@ -38,4 +38,4 @@ function LocationList (props: LocationListProps): ReactElement {
   );
 }
 
-export default LocationList;
+export default memo(LocationList);

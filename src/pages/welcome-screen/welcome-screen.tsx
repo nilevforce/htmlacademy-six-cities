@@ -1,4 +1,8 @@
-import { ReactElement, useEffect, useMemo, useState } from 'react';
+import {
+  ReactElement, useCallback,
+  useEffect, useMemo,
+  useState
+} from 'react';
 import {
   CITIES,
   SortType
@@ -17,57 +21,45 @@ import { getCurrentCity } from '../../store/city/city-selectors.ts';
 import { getOffers } from '../../store/offers/offers-selectors.ts';
 import { changeCity } from '../../store/city/city-actions.ts';
 
+const SORT_TYPE_LIST: SortType[] = Object.values(SortType);
+
 function WelcomeScreen (): ReactElement {
   const dispatch = useAppDispatch();
+
   const [searchParams, setSearchParams] = useSearchParams();
+  const [currentSortType, setCurrentSortType] = useState<SortType>(SortType.Popular);
+  const [hoveredPoint, setHoveredPoint] = useState<MapPoint | null>(null);
+
+  const currentCity = useAppSelector(getCurrentCity);
+  const offers = useAppSelector(getOffers);
 
   useEffect(() => {
     const cityFromUrl = searchParams.get('city');
     if (cityFromUrl && CITIES.includes(cityFromUrl)) {
       dispatch(changeCity(cityFromUrl));
-      setSearchParams({});
+      searchParams.delete('city');
+      setSearchParams(searchParams);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  const currentCity = useAppSelector(getCurrentCity);
-  const offers = useAppSelector(getOffers);
+  const handleLocationChange = useCallback(
+    (city: string) => dispatch(changeCity(city)),
+    []
+  );
 
-  const [currentSortType, setCurrentSortType] = useState<SortType>(SortType.Popular);
-  const [hoveredPoint, setHoveredPoint] = useState<MapPoint | null>(null);
-
-  const sortTypeList: SortType[] = Object.values(SortType);
-
-  const filteredOffers = offers.filter((offer) => offer.city.name === currentCity);
-
-  const mapPoints = useMemo<MapPoint[]>(() => filteredOffers.map((offer) => ({
-    title: offer.title,
-    latitude: offer.location.latitude,
-    longitude: offer.location.longitude,
-  })), [filteredOffers]);
-
-  if (filteredOffers.length === 0) {
-    return (
-      <WelcomeScreenEmpty />
-    );
-  }
-
-  const getSortedOffers = () => {
-    switch (currentSortType) {
-      case SortType.PriceLowToHigh:
-        return filteredOffers.toSorted((a, b) => a.price - b.price);
-      case SortType.PriceHighToLow:
-        return filteredOffers.toSorted((a, b) => b.price - a.price);
-      case SortType.TopRatedFirst:
-        return filteredOffers.toSorted((a, b) => b.rating - a.rating);
-      default:
-        return filteredOffers;
+  const handleSortTypeChange = useCallback((sortType: SortType) => {
+    if (!sortType) {
+      return;
     }
-  };
+    setCurrentSortType(sortType);
+  }, []);
 
-  const sortedOffers = getSortedOffers();
+  const filteredOffers = useMemo(
+    () => offers.filter((offer) => offer.city.name === currentCity),
+    [offers, currentCity]
+  );
 
-  const handlePlaceCardHover = (offerId: string | null) => {
+  const handlePlaceCardHover = useCallback((offerId: string | null) => {
     const hoveredOffer = filteredOffers.find((offer) => offer.id === offerId);
 
     setHoveredPoint(
@@ -79,17 +71,32 @@ function WelcomeScreen (): ReactElement {
         }
         : null
     );
-  };
+  }, [currentCity]);
 
-  const handleLocationChange = (city: string) => dispatch(changeCity(city));
+  const mapPoints = useMemo(() => filteredOffers.map((offer) => ({
+    title: offer.title,
+    latitude: offer.location.latitude,
+    longitude: offer.location.longitude,
+  })), [filteredOffers]);
 
-  const handleSortTypeChange = (sortType: SortType) => {
-    if (!sortType) {
-      return;
+  const sortedOffers = useMemo(() => {
+    switch (currentSortType) {
+      case SortType.PriceLowToHigh:
+        return filteredOffers.toSorted((a, b) => a.price - b.price);
+      case SortType.PriceHighToLow:
+        return filteredOffers.toSorted((a, b) => b.price - a.price);
+      case SortType.TopRatedFirst:
+        return filteredOffers.toSorted((a, b) => b.rating - a.rating);
+      default:
+        return filteredOffers;
     }
+  }, [currentSortType, filteredOffers]);
 
-    setCurrentSortType(sortType);
-  };
+  if (filteredOffers.length === 0) {
+    return (
+      <WelcomeScreenEmpty />
+    );
+  }
 
   return (
     <div className="page page--gray page--main">
@@ -113,7 +120,7 @@ function WelcomeScreen (): ReactElement {
               <b className="places__found">{filteredOffers.length} places to stay in {currentCity}</b>
 
               <SortList
-                sortTypeList={sortTypeList}
+                sortTypeList={SORT_TYPE_LIST}
                 currentSortType={currentSortType}
                 onSortTypeChange={handleSortTypeChange}
               />

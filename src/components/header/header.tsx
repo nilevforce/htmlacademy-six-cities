@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { memo, ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../constants.ts';
 import Logo from '../logo/logo.tsx';
@@ -89,4 +89,4 @@ function Header ({
   );
 }
 
-export default Header;
+export default memo(Header);

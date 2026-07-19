@@ -1,4 +1,5 @@
 import {
+  memo,
   MutableRefObject,
   ReactElement,
   useEffect,
@@ -127,4 +128,4 @@ function MapComponent (props: MapProps): ReactElement {
   );
 }
 
-export default MapComponent;
+export default memo(MapComponent);
