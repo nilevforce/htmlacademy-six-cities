@@ -12,6 +12,8 @@ import {
   fetchFavoriteOffers
 } from '../../store/favorite-offers/favorite-offers-api-actions.ts';
 
+// TODO: Пофиксить проблему со скроллом
+
 function App (): ReactElement {
   const dispatch = useAppDispatch();
   const authStatus = useAppSelector(getAuthStatus);

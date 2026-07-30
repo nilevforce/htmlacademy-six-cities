@@ -48,7 +48,9 @@ import {
 const IMAGE_COUNT: number = 6;
 const MAX_REVIEW_COUNT: number = 10;
 
-// TODO: Закончить оптимизацию компонента
+// TODO:
+//  Пофиксить компоненты карты.
+//  Сейчас какой-бы оффер не был выбран, точка на карте не меняется
 function OfferScreen (): ReactElement {
   const { offerId } = useParams();
   const dispatch = useAppDispatch();

@@ -38,7 +38,6 @@ const fetchFavoriteOffers = createAsyncThunk<
 );
 
 const changeOfferFavoriteStatus = createAsyncThunk<
-  // Тут возвращаемый тип надо тоже менять на Offer
   Offer, {
   offerId: string;
   status: boolean;
@@ -80,8 +79,6 @@ const changeOfferFavoriteStatus = createAsyncThunk<
       : '👋 Removed from favorites.';
     toast.info(message);
 
-    // ПРОБЛЕМА. Если возвращать значение updatedOfferForReturn,
-    // то появляется ошибка цикла у typ State
     return {
       ...updatedOffer,
       isFavorite: data.isFavorite
