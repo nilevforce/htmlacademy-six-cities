@@ -1,14 +1,14 @@
-import { NameSpace } from '../../constants.ts';
+import { NameSpace } from '../../../constants.ts';
 import {
   getFavoriteOffersCount,
   getFavoriteOffers
-} from './favorite-offers-selectors.ts';
-import { makeFakeOffer } from '../../helpers/mocks.ts';
+} from '../favorite-offers-selectors.ts';
+import { makeFakeOffer } from '../../../helpers/mocks.ts';
 
 describe('Favorite offers selectors', () => {
   const state = {
     [NameSpace.FavoriteOffers]: {
-      offers: Array(3).fill(makeFakeOffer()),
+      offers: Array.from({ length: 3 }, () => makeFakeOffer()),
       isLoading: false,
       hasError: false
     }

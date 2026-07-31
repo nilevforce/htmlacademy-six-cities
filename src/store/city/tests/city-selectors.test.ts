@@ -1,5 +1,5 @@
-import { CITIES, NameSpace } from '../../constants.ts';
-import { getCurrentCity } from './city-selectors.ts';
+import { CITIES, NameSpace } from '../../../constants.ts';
+import { getCurrentCity } from '../city-selectors.ts';
 
 describe('City selectors', () => {
   const state = {

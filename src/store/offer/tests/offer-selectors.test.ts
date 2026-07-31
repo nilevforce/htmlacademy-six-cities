@@ -1,23 +1,23 @@
-import { NameSpace } from '../../constants.ts';
+import { NameSpace } from '../../../constants.ts';
 import {
   makeFakeOffer,
   makeFakeOfferDetails,
   makeFakeReview
-} from '../../helpers/mocks.ts';
+} from '../../../helpers/mocks.ts';
 import {
   getOffer,
   getNearbyOffers,
   getOfferReviews,
   getOfferErrorStatus,
   getOfferLoadingStatus
-} from './offer-selectors.ts';
+} from '../offer-selectors.ts';
 
 describe('Offer selectors', () => {
   const state = {
     [NameSpace.Offer]: {
       offer: makeFakeOfferDetails(),
-      offerReviews: Array(3).fill(makeFakeReview()),
-      nearbyOffers: Array(3).fill(makeFakeOffer()),
+      offerReviews: Array.from({ length: 3 }, () => makeFakeReview()),
+      nearbyOffers: Array.from({ length: 3 }, () => makeFakeOffer()),
       isLoading: false,
       hasError: false
     }

@@ -1,7 +1,7 @@
-import { AuthorizationStatus } from '../../constants.ts';
-import { makeFakeUserData } from '../../helpers/mocks.ts';
-import { checkAuth, login, logout } from './user-api-actions.ts';
-import userSlice from './user-slice.ts';
+import { AuthorizationStatus } from '../../../constants.ts';
+import { makeFakeUserData } from '../../../helpers/mocks.ts';
+import { checkAuth, login, logout } from '../user-api-actions.ts';
+import userSlice from '../user-slice.ts';
 
 describe('User slice', () => {
   it('should return initial state with empty action', () => {
@@ -55,7 +55,7 @@ describe('User slice', () => {
     it('should set no auth status and clear user data when rejected', () => {
       const initialState = {
         user: {
-          email: 'test@example.com',
+          email: 'tests@example.com',
           name: 'Test',
           avatarUrl: 'avatar.jpg',
           isPro: true
@@ -78,7 +78,7 @@ describe('User slice', () => {
   describe('login', () => {
     it('should set auth status and save user data when fulfilled', () => {
       const userData = makeFakeUserData();
-      const authData = { email: 'test@example.com', password: 'password' };
+      const authData = { email: 'tests@example.com', password: 'password' };
       const initialState = {
         user: null,
         auth: { status: AuthorizationStatus.Unknown }
@@ -101,10 +101,10 @@ describe('User slice', () => {
     });
 
     it('should set no auth status and clear user data when rejected', () => {
-      const authData = { email: 'test@example.com', password: 'password' };
+      const authData = { email: 'tests@example.com', password: 'password' };
       const initialState = {
         user: {
-          email: 'test@example.com',
+          email: 'tests@example.com',
           name: 'Test',
           avatarUrl: 'avatar.jpg',
           isPro: true
@@ -128,7 +128,7 @@ describe('User slice', () => {
     it('should set no auth status and clear user data when fulfilled', () => {
       const initialState = {
         user: {
-          email: 'test@example.com',
+          email: 'tests@example.com',
           name: 'Test',
           avatarUrl: 'avatar.jpg',
           isPro: true

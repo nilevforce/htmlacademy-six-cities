@@ -18,7 +18,7 @@ const fetchFavoriteOffers = createAsyncThunk<
     api: AxiosInstance;
   };
 }>(
-  'favoriteOffers/fetchOffer',
+  'favoriteOffers/fetchOffers',
   async (_arg, {
     getState,
     rejectWithValue,

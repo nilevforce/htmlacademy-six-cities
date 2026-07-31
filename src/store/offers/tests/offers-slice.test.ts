@@ -1,9 +1,9 @@
-import offersSlice from './offers-slice.ts';
-import { fetchOffers } from './offers-api-actions.ts';
+import offersSlice from '../offers-slice.ts';
+import { fetchOffers } from '../offers-api-actions.ts';
 import {
   changeOfferFavoriteStatus
-} from '../favorite-offers/favorite-offers-api-actions.ts';
-import { makeFakeOffer } from '../../helpers/mocks.ts';
+} from '../../favorite-offers/favorite-offers-api-actions.ts';
+import { makeFakeOffer } from '../../../helpers/mocks.ts';
 
 describe('Offers slice', () => {
   it('should return initial state with empty action', () => {

@@ -1,6 +1,6 @@
-import { AuthorizationStatus, NameSpace } from '../../constants.ts';
-import { makeFakeUserData } from '../../helpers/mocks.ts';
-import { getAuthStatus, getUserEmail } from './user-selectors.ts';
+import { AuthorizationStatus, NameSpace } from '../../../constants.ts';
+import { makeFakeUserData } from '../../../helpers/mocks.ts';
+import { getAuthStatus, getUserEmail } from '../user-selectors.ts';
 
 describe('User selectors', () => {
   const state = {

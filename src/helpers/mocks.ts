@@ -1,14 +1,23 @@
 import * as faker from 'faker';
+import { PayloadAction, ThunkDispatch } from '@reduxjs/toolkit';
+import createAPI from '../services/api.ts';
 
-import { AuthData } from '../types/auth-data';
-import { City } from '../types/city';
-import { Location } from '../types/location';
-import { MapPoint } from '../types/map-points';
-import { Offer, OfferDetails } from '../types/offer';
-import { Point } from '../types/point';
-import { Review } from '../types/review';
-import { ReviewData } from '../types/review-data';
-import { UserData } from '../types/user-data';
+import type { AuthData } from '../types/auth-data';
+import type { City } from '../types/city';
+import type { Location } from '../types/location';
+import type { MapPoint } from '../types/map-points';
+import type { Offer, OfferDetails } from '../types/offer';
+import type { Point } from '../types/point';
+import type { Review } from '../types/review';
+import type { ReviewData } from '../types/review-data';
+import type { UserData } from '../types/user-data';
+import type { RootState } from '../types/state.ts';
+
+export type AppThunkDispatch = ThunkDispatch<
+  RootState,
+  { api: ReturnType<typeof createAPI> },
+  PayloadAction
+>;
 
 const OFFER_TYPES = [
   'apartment',
@@ -126,7 +135,7 @@ export const makeFakeReviewData = (): ReviewData => ({
 export const makeFakeUserData = (): UserData => ({
   name: faker.name.firstName(),
   email: faker.internet.email(),
-  token: faker.datatype.uuid(),
+  token: faker.datatype.string(32),
   avatarUrl: faker.internet.avatar(),
   isPro: faker.datatype.boolean(),
 });

@@ -1,6 +1,6 @@
-import { CITIES } from '../../constants.ts';
-import citySlice from './city-slice.ts';
-import { changeCity } from './city-actions.ts';
+import { CITIES } from '../../../constants.ts';
+import citySlice from '../city-slice.ts';
+import { changeCity } from '../city-actions.ts';
 
 describe('City reducer', () => {
   it('should return initial state with empty action', () => {
